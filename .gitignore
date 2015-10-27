@@ -1,0 +1,33 @@
+.gradle
+	# Local configuration file (sdk path, etc)
+/local.properties
+	# Creo que esto sobra al ignorar .idea completo después
+/.idea/workspace.xml
+/.idea/libraries
+	# OSX files
+.DS_Store
+build/
+/captures
+
+## Obtenidos de http://stackoverflow.com/questions/16736856/what-should-be-in-my-gitignore-for-an-android-studio-project ##
+	#built application files
+*.apk
+*.ap_
+	# files for the dex VM
+*.dex
+	# Java class files
+*.class
+	# generated files
+bin/
+gen/
+		# Windows thumbnail db
+Thumbs.db
+# Eclipse project files
+.classpath
+.project
+	# Android Studio
+*.iml
+.idea
+
+	#NDK
+obj/
