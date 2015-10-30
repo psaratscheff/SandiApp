@@ -49,7 +49,19 @@
             android:layout_alignParentEnd="true"/>
     </RelativeLayout>
 
-    <!-- Scrollable Item below header and above footer -->
+    <ListView
+        android:id="@+id/listViewDiscussion"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:dividerHeight="0.1dp"
+        android:divider="#0000CC"
+        android:layout_below="@id/header"
+        android:layout_above="@id/footer"
+        >
+    </ListView>
+
+
+    <!-- Scrollable Item below header and above footer -
     <ScrollView
         android:id="@+id/scrollableContents"
         android:layout_width="fill_parent"
@@ -62,7 +74,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:id="@+id/listViewDiscussion">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -157,5 +170,6 @@
         </LinearLayout>
 
     </ScrollView>
+    <!- END of Scrollable Item below header and above footer -->
 
 </RelativeLayout>
