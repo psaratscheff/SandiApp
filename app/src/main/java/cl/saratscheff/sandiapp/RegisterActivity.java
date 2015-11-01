@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -47,13 +48,6 @@ public class RegisterActivity extends AppCompatActivity implements LoaderManager
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -323,8 +317,6 @@ public class RegisterActivity extends AppCompatActivity implements LoaderManager
             mRef.createUser(mEmail, mPassword, new Firebase.ValueResultHandler<Map<String, Object>>() {
                 @Override
                 public void onSuccess(Map<String, Object> stringObjectMap) {
-                    System.out.println("############ Se creo correctamente el usuario " + mEmail + ". Uid = " + stringObjectMap.get("uid") + ". Name = "+mUserNameView.getText()+"###############");
-                    //mRef.child("users").child(stringObjectMap.get("uid").toString()).child("name").setValue(mUserNameView.getText());
                     String nombre = "" + mUserNameView.getText();
                     mRef.child("users").child(stringObjectMap.get("uid").toString()).child("name").setValue(nombre);
                     output[0] = true;
@@ -332,53 +324,75 @@ public class RegisterActivity extends AppCompatActivity implements LoaderManager
 
                 @Override
                 public void onError(FirebaseError firebaseError) {
-
-                    /* Mostramos un mensaje en pantalla indicando que no se pudo registrar */
-                    AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
-                    builder1.setMessage("Error creando el usuario. Es posible que el usuario ya exista.");
-                    builder1.setCancelable(true);
-                    builder1.setPositiveButton("Yes",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
-
-                    AlertDialog alert11 = builder1.create();
-                    alert11.show();
                     output[0] = false;
-                    System.out.println("############ ERROR ###############");
                 }
             });
 
             mRef.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    //String newCondition = (String) dataSnapshot.getValue();
-                    //System.out.println("###############"+newCondition+"##################");
-                }
+                public void onDataChange(DataSnapshot dataSnapshot) { }
 
                 @Override
-                public void onCancelled(FirebaseError firebaseError) {
-
-                }
+                public void onCancelled(FirebaseError firebaseError) { }
             });
+
             try {
                 // Simulate network access.
-                Thread.sleep(2000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
 
             }
-            /*
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+
+            if(output[0]){
+                /* Mostramos un mensaje en pantalla indicando que se creo el usuario */
+                final AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+                builder1.setMessage("Usuario creado satisfactoriamente!");
+                builder1.setCancelable(true);
+                builder1.setPositiveButton("Aceptar",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                Handler mainHandler = new Handler(context.getMainLooper());
+
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        AlertDialog alert11 = builder1.create();
+                        alert11.show();
+                    }
+                };
+                mainHandler.post(myRunnable);
+                try {
+                    // Simulate network access.
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+
                 }
             }
-            */
+            else {
+                /* Mostramos un mensaje en pantalla indicando que no se pudo registrar */
+                final AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+                builder1.setMessage("Error creando el usuario. Es posible que el usuario ya exista.");
+                builder1.setCancelable(true);
+                builder1.setPositiveButton("Aceptar",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                Handler mainHandler = new Handler(context.getMainLooper());
 
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        AlertDialog alert11 = builder1.create();
+                        alert11.show();
+                    }
+                };
+                mainHandler.post(myRunnable);
+            }
 
             return output[0];
         }
