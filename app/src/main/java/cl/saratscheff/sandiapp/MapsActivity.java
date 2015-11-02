@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
@@ -36,7 +38,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Context context;
     private boolean placingMarker = true;
     private Marker lastMarker = null;
-    public static LatLng currentLocation = new LatLng(-33.478905, -70.657607);
+    private FloatingActionButton fab;
+    private static LatLng currentLocation = new LatLng(-33.478905, -70.657607);
 
 
     @Override
@@ -62,6 +65,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(final GoogleMap googleMap) {
 
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("Click en floating action button.");
+            }
+        });
+
         mMap = googleMap;
         mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
             @Override
@@ -82,12 +93,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.getUiSettings().setCompassEnabled(true);
 
             //add location button click listener
+
             mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
                 @Override
                 public boolean onMyLocationButtonClick() {
-                    LatLng location = new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude());
 
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+                    try {
+                        LatLng location = new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude());
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+                    } catch (Exception e) { }
 
                     return true;
                 }
