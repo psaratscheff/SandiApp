@@ -32,10 +32,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.firebase.client.AuthData;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -45,6 +48,11 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
+    /**
+     * Nombre y id de usuario que se usara para postear.
+     */
+    public static String userName = "";
+    public static String userID = "";
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -62,12 +70,48 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mLoginFormView;
     private Firebase mRef;
 
+    private ValueEventListener authEventListener = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         Firebase.setAndroidContext(this);
+        mRef = new Firebase("https://sizzling-heat-8397.firebaseio.com");
+
+
+        /* Si el usuario ya se ha registrado en el telefono, entonces se inicia sesion automaticamente */
+        authEventListener = new ValueEventListener(){
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if((boolean)dataSnapshot.getValue()){
+                    String[] userData = new String[2];
+                    mRef.getAuth().getAuth().values().toArray(userData);
+                    userID = userData[1];
+                    mRef.child("users").child(userID).child("name").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            userName = dataSnapshot.getValue().toString();
+                            startActivity(new Intent(LoginActivity.this, MapsActivity.class));
+                        }
+
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        };
+
+        mRef.child(".info/authenticated").addValueEventListener(authEventListener);
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -89,6 +133,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                mRef.child(".info/authenticated").removeEventListener(authEventListener);
                 attemptLogin();
             }
         });
@@ -97,6 +142,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailSignUpButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                mRef.child(".info/authenticated").removeEventListener(authEventListener);
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
             }
         });
@@ -322,17 +368,28 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // TODO: attempt authentication against a network service.
             final boolean[] output = new boolean[]{false};
 
-            mRef = new Firebase("https://sizzling-heat-8397.firebaseio.com");
             mRef.authWithPassword(mEmail, mPassword, new Firebase.AuthResultHandler() {
                 @Override
                 public void onAuthenticated(AuthData authData) {
-                    System.out.println("Autenticado! User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
+                    userID = authData.getUid();
+                    mRef.child("users").child(userID).child("name").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            userName = dataSnapshot.getValue().toString();
+                        }
+
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+
+                        }
+                    });
+                    //System.out.println("Autenticado! User ID: " + userID + ", Nombre: " + userName);
                     output[0] = true;
                 }
+
                 @Override
                 public void onAuthenticationError(FirebaseError firebaseError) {
                     System.out.println("Error autenticando.");
-                    //output[0] = false;
                 }
             });
 
@@ -342,7 +399,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             } catch (InterruptedException e) {
 
             }
-            System.out.println("Output= "+output[0]);
+
             return output[0];
         }
 
