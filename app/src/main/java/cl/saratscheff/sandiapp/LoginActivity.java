@@ -32,8 +32,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.firebase.client.AuthData;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +47,11 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
+    /**
+     * Nombre y id de usuario que se usara para postear.
+     */
+    public static String userName = "";
+    public static String userID = "";
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -68,6 +75,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         setContentView(R.layout.activity_login);
 
         Firebase.setAndroidContext(this);
+        mRef = new Firebase("https://sizzling-heat-8397.firebaseio.com");
+
+        
+        /* Si el usuario ya se ha registrado en el telefono, entonces se inicia sesion automaticamente */
+        mRef.child(".info/authenticated").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                System.out.println("Data: "+dataSnapshot.getChildren());
+                //startActivity(new Intent(LoginActivity.this, MapsActivity.class));
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -322,17 +346,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // TODO: attempt authentication against a network service.
             final boolean[] output = new boolean[]{false};
 
-            mRef = new Firebase("https://sizzling-heat-8397.firebaseio.com");
             mRef.authWithPassword(mEmail, mPassword, new Firebase.AuthResultHandler() {
                 @Override
                 public void onAuthenticated(AuthData authData) {
                     System.out.println("Autenticado! User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
                     output[0] = true;
                 }
+
                 @Override
                 public void onAuthenticationError(FirebaseError firebaseError) {
                     System.out.println("Error autenticando.");
-                    //output[0] = false;
                 }
             });
 
@@ -342,7 +365,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             } catch (InterruptedException e) {
 
             }
-            System.out.println("Output= "+output[0]);
+
             return output[0];
         }
 
