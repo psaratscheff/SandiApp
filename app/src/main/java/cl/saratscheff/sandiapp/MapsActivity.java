@@ -196,9 +196,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mFire.child("markers").child(markerID).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snap) {
-                        System.out.println(snap);
                         editNameDialog.setDate(snap.child("date").getValue().toString());
-                        editNameDialog.setImage(snap.child("image").getValue().toString(), markerID);
                         editNameDialog.setMarkerID(markerID);
                         String creatorID = snap.child("creator").getValue().toString();
 
@@ -206,7 +204,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 editNameDialog.setCreator(dataSnapshot.getValue().toString());
-                                System.out.println("Name: " + dataSnapshot.getValue().toString());
+                            }
+
+                            @Override
+                            public void onCancelled(FirebaseError firebaseError) {
+
+                            }
+                        });
+
+                        mFire.child("images").child(markerID).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                editNameDialog.setImage(dataSnapshot.getValue().toString(), markerID);
                             }
 
                             @Override
@@ -333,21 +342,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 13));
 
-        MarkerOptions markerOptions = new MarkerOptions();
-
-        markerOptions.position(currentLocation);
-        markerOptions.title(titulo);
-        markerOptions.snippet(descripcion);
-
         String id = getRandomString(32);
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
 
         saveMarkerToFirebase(id, dateFormat.format(date).toString(), titulo, descripcion, image, currentLocation);
-
-        Marker mark = mMap.addMarker(markerOptions);
-
-        currentMarkers.put(mark, id);
 
     }
 
@@ -367,7 +366,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mFire.child("markers").child(id).child("date").setValue(date);
         mFire.child("markers").child(id).child("title").setValue(title);
         mFire.child("markers").child(id).child("description").setValue(description);
-        mFire.child("markers").child(id).child("image").setValue(image);
+        mFire.child("images").child(id).setValue(image);
+        //mFire.child("markers").child(id).child("image").setValue(image);
         mFire.child("markers").child(id).child("latitude").setValue(location.latitude);
         mFire.child("markers").child(id).child("longitude").setValue(location.longitude);
     }
