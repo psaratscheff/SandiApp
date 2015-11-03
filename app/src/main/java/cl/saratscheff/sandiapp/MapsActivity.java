@@ -172,14 +172,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         /* Cuando se hace un long click se agrega un marcador nuevo */
-        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+        /* mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
                 if (placingMarker) {
                     addTouchedPinToMap(latLng, "Click para crear post!", "");
                 }
             }
-        });
+        }); */
 
         /* Decimos que hacer cuando se apriete el titulo de un marcador */
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -330,7 +330,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /* Agrega un pin al mapa en la ubicacion del usuario. Ademas este pin se guarda en
      * la BDD de Firebase. */
     public void addPinToCurrentLoc(String titulo, String descripcion, String image){
-/*
+
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 13));
 
         MarkerOptions markerOptions = new MarkerOptions();
@@ -348,7 +348,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Marker mark = mMap.addMarker(markerOptions);
 
         currentMarkers.put(mark, id);
-        */
+
     }
 
     /* Retorna la ubicacion actual. La ubicacion actual se calcula cuando
@@ -372,8 +372,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mFire.child("markers").child(id).child("longitude").setValue(location.longitude);
     }
 
-    private String code(Bitmap img) {
+    private String code(Bitmap imgOriginalSize) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Bitmap img = ScaleImage(imgOriginalSize, 300, 300); // Ajustar tamaño, maximo 300x300px
         img.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] b = baos.toByteArray();
         String temp = null;
@@ -390,5 +391,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.e("EWN", "Out of memory error catched");
         }
         return temp;
+    }
+
+    public static Bitmap ScaleImage(Bitmap image, int maxHeight, int maxWidth)
+    {
+        int height = image.getHeight();
+        int width = image.getWidth();
+        if (width<maxWidth && height>maxHeight){
+            return image;
+        };
+
+        double ratioH = (double)maxHeight / image.getHeight();
+        double ratioW = (double)maxWidth / image.getWidth();
+
+        double ratio = Math.min(ratioH, ratioW);
+        int newWidth = (int)(image.getHeight() * ratio);
+        int newHeight = (int)(image.getWidth() * ratio);
+
+        Bitmap newImage = Bitmap.createScaledBitmap(image, newHeight, newWidth, true);
+        return newImage;
     }
 }
