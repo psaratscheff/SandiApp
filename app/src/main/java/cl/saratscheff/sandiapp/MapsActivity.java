@@ -1,6 +1,7 @@
 package cl.saratscheff.sandiapp;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,12 +9,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 
 import com.firebase.client.DataSnapshot;
@@ -32,6 +35,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.firebase.client.Firebase;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,6 +70,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    try {
+    if (requestCode == 1) {
+        if (resultCode == Activity.RESULT_OK) {
+            String titulo = data.getStringExtra("titulo");
+            String descripcion = data.getStringExtra("descripcion");
+            String imgpath = data.getStringExtra("img");
+
+
+            File mediaStorageDir = new File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "SandiApp/" + imgpath);
+            String path = mediaStorageDir.getAbsolutePath();
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            String img64 = code(bitmap);
+
+            addPinToCurrentLoc(titulo, descripcion, img64);
+
+            String done = "";
+        }
+        if (resultCode == Activity.RESULT_CANCELED) {
+            //Write your code if there's no result
+        }
+    }
+
+    }catch (Exception e)
+    {}
+    }//onActivityResult
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -81,13 +115,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LatLng loc = MapsActivity.getCurrentLocation();
-                double Lat = loc.latitude;
-                double Lon = loc.longitude;
                 Intent Form = new Intent(MapsActivity.this, Formulario.class);
-                Form.putExtra("Lat", Lat);
-                Form.putExtra("Lon", Lon);
-                startActivity(Form);
+                startActivityForResult(Form, 1);
             }
         });
 
@@ -300,5 +329,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mFire.child("markers").child(id).child("image").setValue(image);
         mFire.child("markers").child(id).child("latitude").setValue(location.latitude);
         mFire.child("markers").child(id).child("longitude").setValue(location.longitude);
+    }
+
+    private String code(Bitmap img) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        img.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] b = baos.toByteArray();
+        String temp = null;
+        try {
+            System.gc();
+            temp = Base64.encodeToString(b, Base64.DEFAULT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } catch (OutOfMemoryError e) {
+            baos = new ByteArrayOutputStream();
+            img.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+            b = baos.toByteArray();
+            temp = Base64.encodeToString(b, Base64.DEFAULT);
+            Log.e("EWN", "Out of memory error catched");
+        }
+        return temp;
     }
 }

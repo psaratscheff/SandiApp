@@ -1,6 +1,7 @@
 package cl.saratscheff.sandiapp;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -53,26 +54,18 @@ public class Formulario extends AppCompatActivity {
 
             public void onClick(View v) {
                 try {
-                    String[] formulario = {String.valueOf(titulo.getText()), String.valueOf(descripcion.getText()), code(takenImage), "0","0"};
+
+                    Intent returnIntent = new Intent();
+                    returnIntent.putExtra("titulo",String.valueOf(titulo.getText()));
+                    returnIntent.putExtra("descripcion",String.valueOf(descripcion.getText()));
+                    returnIntent.putExtra("img", photoFileName);
+                    setResult(Activity.RESULT_OK, returnIntent);
                     finish();
                     }catch (Exception e){
 
                     }
-                /*
-                try {
-                    mFire = new Firebase("https://sizzling-heat-8397.firebaseio.com");
-
-                    finish();
-                }catch (Exception e){
-
-                }
-                */
             }
         });
-
-
-
-
     }
 
     @Override

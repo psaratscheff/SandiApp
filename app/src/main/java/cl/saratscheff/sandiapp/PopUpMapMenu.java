@@ -3,6 +3,8 @@ package cl.saratscheff.sandiapp;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,12 @@ import android.support.v4.app.DialogFragment;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 
 public class PopUpMapMenu extends DialogFragment {
@@ -37,6 +45,49 @@ public class PopUpMapMenu extends DialogFragment {
         mDescription = (TextView) view.findViewById(R.id.lbl_description);
         mImgPost = (ImageView) view.findViewById(R.id.image_post);
 
+        String dateID = date.replace("/", "");
+        dateID = dateID.replace(" ", "");
+        dateID = dateID.replace(":", "");
+
+      //  String ID = title+description;
+        //ID = ID.replace(" ", "");
+        //ID = ID.replace(".", "");
+        //ID = (ID.hashCode() + "").substring(0,15);
+
+
+
+
+        File mediaStorageDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "SandiApp/" + dateID + ".jpg");
+        String path = mediaStorageDir.getAbsolutePath();
+        Bitmap bitmap = BitmapFactory.decodeFile(path);
+
+        if (bitmap != null)
+        {
+            mImgPost.setImageBitmap(bitmap);
+        }else{
+
+            Bitmap img = decode(image);
+            mImgPost.setImageBitmap(img);
+            FileOutputStream out = null;
+            String strMyImagePath = mediaStorageDir.getAbsolutePath();
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(mediaStorageDir);
+                img.compress(Bitmap.CompressFormat.PNG,70, fos);
+
+                fos.flush();
+                fos.close();
+                //   MediaStore.Images.Media.insertImage(getContentResolver(), b, "Screen", "screen");
+            }catch (FileNotFoundException e) {
+
+                e.printStackTrace();
+            } catch (Exception e) {
+
+                e.printStackTrace();
+            }
+        }
+
         mBtnPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,8 +95,12 @@ public class PopUpMapMenu extends DialogFragment {
             }
         });
         getDialog().setTitle(title);
-        //Bitmap img = decode(image);
-        //mImgPost.setImageBitmap(img);
+
+
+
+
+
+
 
 
         return view;
