@@ -2,6 +2,7 @@ package cl.saratscheff.sandiapp;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -69,7 +70,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Click en floating action button.");
+                LatLng loc = MapsActivity.getCurrentLocation();
+                double Lat = loc.latitude;
+                double Lon = loc.longitude;
+                Intent Form = new Intent(MapsActivity.this, Formulario.class);
+                Form.putExtra("Lat", Lat);
+                Form.putExtra("Lon", Lon);
+                startActivity(Form);
             }
         });
 
