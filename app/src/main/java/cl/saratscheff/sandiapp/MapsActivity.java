@@ -330,7 +330,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /* Agrega un pin al mapa en la ubicacion del usuario. Ademas este pin se guarda en
      * la BDD de Firebase. */
     public void addPinToCurrentLoc(String titulo, String descripcion, String image){
-
+/*
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 13));
 
         MarkerOptions markerOptions = new MarkerOptions();
@@ -348,6 +348,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Marker mark = mMap.addMarker(markerOptions);
 
         currentMarkers.put(mark, id);
+        */
     }
 
     /* Retorna la ubicacion actual. La ubicacion actual se calcula cuando
