@@ -72,28 +72,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    try {
+    if (requestCode == 1) {
+        if (resultCode == Activity.RESULT_OK) {
+            String titulo = data.getStringExtra("titulo");
+            String descripcion = data.getStringExtra("descripcion");
+            String imgpath = data.getStringExtra("img");
 
-        if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK){
-                String titulo=data.getStringExtra("titulo");
-                String descripcion=data.getStringExtra("descripcion");
-                String imgpath=data.getStringExtra("img");
 
+            File mediaStorageDir = new File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "SandiApp/" + imgpath);
+            String path = mediaStorageDir.getAbsolutePath();
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            String img64 = code(bitmap);
 
-                File mediaStorageDir = new File(
-                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "SandiApp/"+imgpath);
-                String path = mediaStorageDir.getAbsolutePath();
-                Bitmap bitmap = BitmapFactory.decodeFile(path);
-                String img64 = code(bitmap);
+            addPinToCurrentLoc(titulo, descripcion, img64);
 
-                addPinToCurrentLoc(titulo, descripcion, img64);
-
-                String done ="";
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                //Write your code if there's no result
-            }
+            String done = "";
         }
+        if (resultCode == Activity.RESULT_CANCELED) {
+            //Write your code if there's no result
+        }
+    }
+
+    }catch (Exception e)
+    {}
     }//onActivityResult
 
     /**

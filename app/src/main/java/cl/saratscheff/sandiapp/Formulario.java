@@ -60,18 +60,12 @@ public class Formulario extends AppCompatActivity {
                     returnIntent.putExtra("descripcion",String.valueOf(descripcion.getText()));
                     returnIntent.putExtra("img", photoFileName);
                     setResult(Activity.RESULT_OK, returnIntent);
-
-
                     finish();
                     }catch (Exception e){
 
                     }
             }
         });
-
-
-
-
     }
 
     @Override

@@ -44,8 +44,8 @@ public class PopUpMapMenu extends DialogFragment {
             }
         });
         getDialog().setTitle(title);
-        //Bitmap img = decode(image);
-        //mImgPost.setImageBitmap(img);
+        Bitmap img = decode(image);
+        mImgPost.setImageBitmap(img);
 
 
         return view;
