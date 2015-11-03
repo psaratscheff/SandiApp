@@ -1,5 +1,6 @@
 package cl.saratscheff.sandiapp;
 
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,7 +26,7 @@ import java.io.IOException;
 public class PopUpMapMenu extends DialogFragment {
     private TextView mDescription = null;
     private Button mBtnPost;
-    private ImageView mImgPost;
+    private ImageView mImgPost = null;
     private String markerID = "";
     private String title = "";
     private String description = "";
@@ -47,20 +48,8 @@ public class PopUpMapMenu extends DialogFragment {
         mDescription = (TextView) view.findViewById(R.id.lbl_description);
         mImgPost = (ImageView) view.findViewById(R.id.image_post);
 
-        String dateID = date.replace("/", "");
-        dateID = dateID.replace(" ", "");
-        dateID = dateID.replace(":", "");
-
-      //  String ID = title+description;
-        //ID = ID.replace(" ", "");
-        //ID = ID.replace(".", "");
-        //ID = (ID.hashCode() + "").substring(0,15);
-
-
-
-
         File mediaStorageDir = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "SandiApp/" + dateID + ".jpg");
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "SandiApp/" + markerID + ".jpg");
         String path = mediaStorageDir.getAbsolutePath();
         Bitmap bitmap = BitmapFactory.decodeFile(path);
 
@@ -70,25 +59,32 @@ public class PopUpMapMenu extends DialogFragment {
         }else{
 
             Bitmap img = decode(image);
-            mImgPost.setImageBitmap(img);
-            FileOutputStream out = null;
-            String strMyImagePath = mediaStorageDir.getAbsolutePath();
-            FileOutputStream fos = null;
-            try {
-                fos = new FileOutputStream(mediaStorageDir);
-                img.compress(Bitmap.CompressFormat.PNG,70, fos);
+            if (img != null) {
+                mImgPost.setImageBitmap(img);
+                FileOutputStream out = null;
+                String strMyImagePath = mediaStorageDir.getAbsolutePath();
+                FileOutputStream fos = null;
+                try {
+                    fos = new FileOutputStream(mediaStorageDir);
+                    img.compress(Bitmap.CompressFormat.PNG, 70, fos);
+                    fos.flush();
+                    fos.close();
+                } catch (FileNotFoundException e) {
 
-                fos.flush();
-                fos.close();
-                //   MediaStore.Images.Media.insertImage(getContentResolver(), b, "Screen", "screen");
-            }catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
 
-                e.printStackTrace();
-            } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }else
+            {
+                String error = "";
 
-                e.printStackTrace();
             }
         }
+
+
+
 
         mBtnPost.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,6 +99,9 @@ public class PopUpMapMenu extends DialogFragment {
 
         return view;
     }
+
+
+
 
     public void setMarkerID(String ID){
         this.markerID = ID;
@@ -127,8 +126,38 @@ public class PopUpMapMenu extends DialogFragment {
         updateDescription();
     }
 
-    public void setImage(String Image) {
+    public void setImage(String Image, String markerID) {
         this.image = Image;
+        if(mImgPost != null) {
+
+            File mediaStorageDir = new File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "SandiApp/" + markerID + ".jpg");
+            String path = mediaStorageDir.getAbsolutePath();
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            if (bitmap != null) {
+                mImgPost.setImageBitmap(bitmap);
+            } else {
+
+                Bitmap img = decode(image);
+                mImgPost.setImageBitmap(img);
+
+                FileOutputStream out = null;
+                String strMyImagePath = mediaStorageDir.getAbsolutePath();
+                FileOutputStream fos = null;
+                try {
+                    fos = new FileOutputStream(mediaStorageDir);
+                    img.compress(Bitmap.CompressFormat.PNG, 70, fos);
+                    fos.flush();
+                    fos.close();
+                } catch (FileNotFoundException e) {
+
+                    e.printStackTrace();
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private Bitmap decode(String imageFile)
