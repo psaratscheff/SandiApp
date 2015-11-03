@@ -11,9 +11,11 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Base64;
 import android.util.Log;
@@ -55,6 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker lastMarker = null;
     private FloatingActionButton fab;
     private static LatLng currentLocation = new LatLng(-33.478905, -70.657607);
+    public PopUpMapMenu editNameDialog;
 
     private HashMap<Marker,String> currentMarkers = new HashMap<Marker,String>();
 
@@ -73,6 +76,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     try {
+
+
     if (requestCode == 1) {
         if (resultCode == Activity.RESULT_OK) {
             String titulo = data.getStringExtra("titulo");
@@ -183,7 +188,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 final String markerID = currentMarkers.get(marker);
 
                 FragmentManager fm = getSupportFragmentManager();
-                final PopUpMapMenu editNameDialog = new PopUpMapMenu();
+                editNameDialog = new PopUpMapMenu();
                 editNameDialog.setTitle(marker.getTitle());
                 editNameDialog.setDescription(marker.getSnippet());
 
@@ -192,7 +197,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onDataChange(DataSnapshot snap) {
                         System.out.println(snap);
                         editNameDialog.setDate(snap.child("date").getValue().toString());
-                        editNameDialog.setImage(snap.child("image").getValue().toString());
+                        editNameDialog.setImage(snap.child("image").getValue().toString(), markerID);
                         editNameDialog.setMarkerID(markerID);
                         String creatorID = snap.child("creator").getValue().toString();
 
