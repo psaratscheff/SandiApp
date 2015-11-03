@@ -1,5 +1,6 @@
 package cl.saratscheff.sandiapp;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ public class PopUpMapMenu extends DialogFragment {
     private TextView mDescription = null;
     private Button mBtnPost;
     private ImageView mImgPost;
+    private String markerID = "";
     private String title = "";
     private String description = "";
     private String date = "";
@@ -92,18 +94,18 @@ public class PopUpMapMenu extends DialogFragment {
             @Override
             public void onClick(View v) {
                 //TODO Abrir vista del post
+                Intent myIntent = new Intent(v.getContext(), ComplaintActivity.class);
+                myIntent.putExtra("markerID", markerID); // No puedo pasar la imagen por su tamaño!!
+                PopUpMapMenu.this.startActivity(myIntent);
             }
         });
         getDialog().setTitle(title);
 
-
-
-
-
-
-
-
         return view;
+    }
+
+    public void setMarkerID(String ID){
+        this.markerID = ID;
     }
 
     public void setTitle(String Title){

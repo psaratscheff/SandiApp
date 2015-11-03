@@ -2,11 +2,13 @@ package cl.saratscheff.sandiapp;
 
 import android.annotation.TargetApi;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
@@ -34,11 +36,10 @@ public class ComplaintActivity extends AppCompatActivity {
     ListView listViewDiscussion;
     private Firebase nRef;
     private Firebase messagesRef;
-    private Firebase usersRef;
 
-    private String complaintID;
-    private String userID;
+    private String markerID;
     private String userName;
+    private Bitmap image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,32 @@ public class ComplaintActivity extends AppCompatActivity {
         final ImageButton imageButton = (ImageButton) findViewById(R.id.imageButton);
         listViewDiscussion = (ListView)findViewById(R.id.listViewDiscussion);
         listViewDiscussion.setAdapter(new MessageRowAdapter(this));
+
+        // userName = "USUARIO_EJEMPLO"; /* LoginActivity.userName */
+        // markerID = "YOnudXANxLx5fLQfOekFl5goPbhM9YX4"; /* RECIBIR DESDE EL MAIN */
+        userName = LoginActivity.userName;
+        Intent intent = getIntent();
+        markerID = intent.getStringExtra("markerID");
+
+        Firebase.setAndroidContext(this);
+        nRef = new Firebase("https://sizzling-heat-8397.firebaseio.com/");
+        messagesRef = nRef.child("markers").child(markerID).child("messages");
+
+        nRef.child("markers").child(markerID).child("image").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String imageString = (String) snapshot.getValue();
+                byte[] imageAsBytes = Base64.decode(imageString, Base64.DEFAULT);
+                image = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
+                imageButton.setImageBitmap(image);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
 
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,27 +92,10 @@ public class ComplaintActivity extends AppCompatActivity {
                         nagDialog.dismiss();
                     }
                 });
-
-                /* EJEMPLO DE IMAGEN EN BITMAP DESDE EL DRAWABLE DE PLACEHOLDER */
-                Bitmap bitMapImage = BitmapFactory.decodeResource(ComplaintActivity.this.getResources(),
-                        R.drawable.dead_watermelon);
-                ivPreview.setImageBitmap(bitMapImage);
+                ivPreview.setImageBitmap(image);
                 nagDialog.show();
             }
         });
-
-
-
-
-
-        userName = "USUARIO_EJEMPLO"; /* LoginActivity.userName */
-        complaintID = "edsgeac2BPLpgqtFd6zTnQsnqhiqeH3L"; /* RECIBIR DESDE EL MAIN */
-
-
-        Firebase.setAndroidContext(this);
-        nRef = new Firebase("https://sizzling-heat-8397.firebaseio.com/");
-        messagesRef = nRef.child("markers").child(complaintID).child("messages");
-        usersRef = nRef.child("users");
 
         // onChildAdded event is triggered once for each existing child and then again every time a new child is added
         messagesRef.addChildEventListener(new ChildEventListener() {

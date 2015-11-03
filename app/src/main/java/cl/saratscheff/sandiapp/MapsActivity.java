@@ -180,7 +180,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onInfoWindowClick(Marker marker) {
 
-                String markerID = currentMarkers.get(marker);
+                final String markerID = currentMarkers.get(marker);
 
                 FragmentManager fm = getSupportFragmentManager();
                 final PopUpMapMenu editNameDialog = new PopUpMapMenu();
@@ -193,6 +193,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         System.out.println(snap);
                         editNameDialog.setDate(snap.child("date").getValue().toString());
                         editNameDialog.setImage(snap.child("image").getValue().toString());
+                        editNameDialog.setMarkerID(markerID);
                         String creatorID = snap.child("creator").getValue().toString();
 
                         mFire.child("users").child(creatorID).child("name").addValueEventListener(new ValueEventListener() {
