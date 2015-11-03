@@ -1,12 +1,22 @@
 package cl.saratscheff.sandiapp;
 
+import android.annotation.TargetApi;
+import android.app.Dialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.firebase.client.ChildEventListener;
@@ -30,20 +40,42 @@ public class ComplaintActivity extends AppCompatActivity {
     private String userID;
     private String userName;
 
-    private ArrayList<MessageClass> mensajes;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_complaint);
+        final ImageButton imageButton = (ImageButton) findViewById(R.id.imageButton);
         listViewDiscussion = (ListView)findViewById(R.id.listViewDiscussion);
-
-
-        // String[] codeLearnChapters = new String[] { "Android Introduction","Android Setup/Installation","Android Hello World","Android Layouts/Viewgroups","Android Activity & Lifecycle","Intents in Android"};
-        //ArrayAdapter<String> codeLearnArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, codeLearnChapters);
-        // listViewDiscussion.setAdapter(codeLearnArrayAdapter);
-        mensajes = new ArrayList<MessageClass>();
         listViewDiscussion.setAdapter(new MessageRowAdapter(this));
+
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                final Dialog nagDialog = new Dialog(ComplaintActivity.this,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                nagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                nagDialog.setCancelable(false);
+                nagDialog.setContentView(R.layout.full_screen_image);
+                Button btnClose = (Button)nagDialog.findViewById(R.id.btnIvClose);
+                ImageView ivPreview = (ImageView)nagDialog.findViewById(R.id.imageViewPreview);
+                btnClose.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View arg0) {
+
+                        nagDialog.dismiss();
+                    }
+                });
+
+                /* EJEMPLO DE IMAGEN EN BITMAP DESDE EL DRAWABLE DE PLACEHOLDER */
+                Bitmap bitMapImage = BitmapFactory.decodeResource(ComplaintActivity.this.getResources(),
+                        R.drawable.dead_watermelon);
+                ivPreview.setImageBitmap(bitMapImage);
+                nagDialog.show();
+            }
+        });
+
+
+
 
 
         userName = "USUARIO_EJEMPLO"; /* LoginActivity.userName */
