@@ -170,7 +170,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 editNameDialog.setCreator(dataSnapshot.getValue().toString());
-                                System.out.println("Name: "+dataSnapshot.getValue().toString());
+                                System.out.println("Name: " + dataSnapshot.getValue().toString());
                             }
 
                             @Override
@@ -185,6 +185,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         System.out.println("The read failed: " + firebaseError.getMessage());
                     }
                 });
+
                 editNameDialog.show(fm, "fragment_pop_up_map_menu");
             }
         });
@@ -192,8 +193,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         /* Definimos la posicion y vista inicial */
         LatLng santiago = new LatLng(-33.478905, -70.657607);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(santiago, 11));
-
-        addPinToCurrentLoc("Patito", "Cuack", "kjsdlkfjnwse435klmnsdflk;345lknsdf");
     }
 
     /* Esto es para agregar un marcador haciendo touch */

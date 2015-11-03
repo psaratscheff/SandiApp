@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 
 public class PopUpMapMenu extends DialogFragment {
-    private TextView mDescription;
+    private TextView mDescription = null;
     private Button mBtnPost;
     private ImageView mImgPost;
     private String title = "";
@@ -46,7 +46,7 @@ public class PopUpMapMenu extends DialogFragment {
         getDialog().setTitle(title);
         //Bitmap img = decode(image);
         //mImgPost.setImageBitmap(img);
-        mDescription.setText(date + ": " + creator + "\n" + description);
+
 
         return view;
     }
@@ -57,14 +57,17 @@ public class PopUpMapMenu extends DialogFragment {
 
     public void setDescription(String Description){
         this.description = Description;
+        updateDescription();
     }
 
     public void setDate(String Date){
         this.date = Date;
+        updateDescription();
     }
 
     public void setCreator(String Creator) {
         this.creator = Creator;
+        updateDescription();
     }
 
     public void setImage(String Image) {
@@ -76,5 +79,11 @@ public class PopUpMapMenu extends DialogFragment {
         byte[] imageAsBytes = Base64.decode(imageFile, Base64.DEFAULT);
         Bitmap bmp = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
         return  bmp;
+    }
+
+    private void updateDescription(){
+        if(mDescription != null){
+            mDescription.setText(date + " por " + creator + "\n\n" + description);
+        }
     }
 }
