@@ -53,6 +53,9 @@
         </activity>
         <activity android:name=".Formulario" >
         </activity>
+        <activity android:name=".ComplaintActivity" >
+            // FALTA AÑADIR PADRE!!!
+        </activity>
     </application>
 
 </manifest>
