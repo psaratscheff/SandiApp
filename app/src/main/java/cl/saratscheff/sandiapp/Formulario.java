@@ -2,9 +2,11 @@ package cl.saratscheff.sandiapp;
 
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -34,16 +36,19 @@ public class Formulario extends AppCompatActivity {
     public EditText titulo;
     public EditText descripcion;
     private Firebase mFire;
+    ImageView ivPreview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_formulario);
+        getWindow().getDecorView().setBackgroundColor(Color.WHITE);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, getPhotoFileUri(photoFileName)); // set the image file name
         // Start the image capture intent to take photo
         startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-
+        ivPreview = (ImageView) findViewById(R.id.imageView);
+        ivPreview.setClickable(true);
 
 
         Button publicar =  (Button) findViewById(R.id.buttonPublicar);
@@ -55,18 +60,43 @@ public class Formulario extends AppCompatActivity {
             public void onClick(View v) {
                 try {
 
-                    Intent returnIntent = new Intent();
-                    returnIntent.putExtra("titulo",String.valueOf(titulo.getText()));
-                    returnIntent.putExtra("descripcion",String.valueOf(descripcion.getText()));
-                    returnIntent.putExtra("img", photoFileName);
-                    setResult(Activity.RESULT_OK, returnIntent);
-                    finish();
+                    if (String.valueOf(titulo.getText()) == "" |String.valueOf(descripcion.getText()) == "") {
+
+                        Toast.makeText(Formulario.this,
+                               "Complete los campos Titulo y Descripcion",
+                             Toast.LENGTH_LONG).show();
+                    }else {
+
+                        Intent returnIntent = new Intent();
+                        returnIntent.putExtra("titulo", String.valueOf(titulo.getText()));
+                        returnIntent.putExtra("descripcion", String.valueOf(descripcion.getText()));
+                        returnIntent.putExtra("img", photoFileName);
+                        setResult(Activity.RESULT_OK, returnIntent);
+                        finish();
+                    }
                     }catch (Exception e){
 
                     }
             }
         });
+
+        ivPreview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, getPhotoFileUri(photoFileName)); // set the image file name
+                // Start the image capture intent to take photo
+                startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+
+
+
+            }
+        });
     }
+
+
+       // Toast.makeText(this, R.string.TEXT, Toast.LENGTH_SHORT).show();
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -77,7 +107,7 @@ public class Formulario extends AppCompatActivity {
                 takenImage = BitmapFactory.decodeFile(takenPhotoUri.getPath());
                 // Load the taken image into a preview
 
-                ImageView ivPreview = (ImageView) findViewById(R.id.imageView);
+
                 ivPreview.setImageBitmap(takenImage);
             } else { // Result was a failure
                 Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
