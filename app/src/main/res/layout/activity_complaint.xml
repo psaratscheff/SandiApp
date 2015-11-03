@@ -16,7 +16,7 @@
             android:layout_height="150dp"
             android:background="@drawable/dead_watermelon"
             android:clickable="true"
-            android:scaleType="fitXY"/>
+            android:scaleType="centerCrop"/>
     </RelativeLayout>
 
     <!-- Footer aligned to bottom -->
