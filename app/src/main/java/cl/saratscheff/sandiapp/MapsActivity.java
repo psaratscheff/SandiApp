@@ -21,6 +21,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
@@ -260,17 +261,49 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mFireMarkers.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    LatLng loc = new LatLng(Double.parseDouble(child.child("latitude").getValue().toString()), Double.parseDouble(child.child("longitude").getValue().toString()));
+                if(snapshot.hasChildren()){
+                    for (DataSnapshot child : snapshot.getChildren()) {
 
-                    MarkerOptions markerOptions = new MarkerOptions();
+                        boolean[] shouldCreateMark = new boolean[]{false, false, false};
 
-                    markerOptions.position(loc);
-                    markerOptions.title(child.child("title").getValue().toString());
-                    markerOptions.snippet(child.child("description").getValue().toString());
+                        LatLng loc = null;
+                        if(child.child("latitude").exists() && child.child("longitude").exists()){
+                            loc = new LatLng(Double.parseDouble(child.child("latitude").getValue().toString()),
+                                    Double.parseDouble(child.child("longitude").getValue().toString()));
+                            shouldCreateMark[0] = true;
+                        }
 
-                    Marker mark = mMap.addMarker(markerOptions);
-                    currentMarkers.put(mark, child.getKey());
+                        String title = "";
+                        String description = "";
+
+                        if(child.child("title").exists()){
+                            title = child.child("title").getValue().toString();
+                            shouldCreateMark[1] = true;
+                        }
+
+                        if(child.child("description").exists()){
+                            description = child.child("description").getValue().toString();
+                            shouldCreateMark[2] = true;
+                        }
+
+                        boolean create = true;
+
+                        for(int i = 0; i<shouldCreateMark.length; i++){
+                            if(shouldCreateMark[i] == false)
+                                create = false;
+                        }
+
+                        if(create){
+                            MarkerOptions markerOptions = new MarkerOptions();
+
+                            markerOptions.position(loc);
+                            markerOptions.title(child.child("title").getValue().toString());
+                            markerOptions.snippet(child.child("description").getValue().toString());
+
+                            Marker mark = mMap.addMarker(markerOptions);
+                            currentMarkers.put(mark, child.getKey());
+                        }
+                    }
                 }
             }
             @Override
@@ -279,6 +312,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
+
 
     private String getRandomString(int length) {
         Random rnd = new Random();
