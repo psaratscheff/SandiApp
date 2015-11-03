@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -27,6 +28,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,8 +51,6 @@ public class ComplaintActivity extends AppCompatActivity {
         listViewDiscussion = (ListView)findViewById(R.id.listViewDiscussion);
         listViewDiscussion.setAdapter(new MessageRowAdapter(this));
 
-        // userName = "USUARIO_EJEMPLO"; /* LoginActivity.userName */
-        // markerID = "YOnudXANxLx5fLQfOekFl5goPbhM9YX4"; /* RECIBIR DESDE EL MAIN */
         userName = LoginActivity.userName;
         Intent intent = getIntent();
         markerID = intent.getStringExtra("markerID");
@@ -59,20 +59,10 @@ public class ComplaintActivity extends AppCompatActivity {
         nRef = new Firebase("https://sizzling-heat-8397.firebaseio.com/");
         messagesRef = nRef.child("markers").child(markerID).child("messages");
 
-        nRef.child("markers").child(markerID).child("image").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                String imageString = (String) snapshot.getValue();
-                byte[] imageAsBytes = Base64.decode(imageString, Base64.DEFAULT);
-                image = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
-                imageButton.setImageBitmap(image);
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "SandiApp/" + markerID + ".jpg");
+        String path = mediaStorageDir.getAbsolutePath();
+        image = BitmapFactory.decodeFile(path);
+        imageButton.setImageBitmap(image);
 
 
         imageButton.setOnClickListener(new View.OnClickListener() {
@@ -104,30 +94,28 @@ public class ComplaintActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot snapshot, String previousChildKey) {
                 MessageClass newMessage = snapshot.getValue(MessageClass.class);
                 ((MessageRowAdapter)listViewDiscussion.getAdapter()).add(newMessage);
-                System.out.println("Author: " + newMessage.getAuthor());
-                System.out.println("Message: " + newMessage.getContent());
+                // System.out.println("Author: " + newMessage.getAuthor());
+                // System.out.println("Message: " + newMessage.getContent());
             }
             // Get the data on a post that has changed
             @Override
             public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
-                String title = (String) snapshot.child("title").getValue();
-                System.out.println("The updated post title is " + title);
+                // nada
             }
             // Get the data on a post that has been removed
             @Override
             public void onChildRemoved(DataSnapshot snapshot) {
-                String title = (String) snapshot.child("title").getValue();
-                System.out.println("The blog post titled " + title + " has been deleted");
+                // nada
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                // NO me preocupo por cambios de orden (Jamás deberían ocurrir)
+                // nada
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
-                // ERRR, que hacer?
+                // nada
             }
         });
     }
