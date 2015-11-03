@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.design.widget.FloatingActionButton;
@@ -11,6 +13,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 import android.view.View;
 
 import com.firebase.client.DataSnapshot;
@@ -22,12 +25,18 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.firebase.client.Firebase;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -41,6 +50,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker lastMarker = null;
     private FloatingActionButton fab;
     private static LatLng currentLocation = new LatLng(-33.478905, -70.657607);
+
+    private HashMap<Marker,String> currentMarkers = new HashMap<Marker,String>();
 
 
     @Override
@@ -140,10 +151,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onInfoWindowClick(Marker marker) {
 
+                String markerID = currentMarkers.get(marker);
+
                 FragmentManager fm = getSupportFragmentManager();
-                PopUpMapMenu editNameDialog = new PopUpMapMenu();
+                final PopUpMapMenu editNameDialog = new PopUpMapMenu();
                 editNameDialog.setTitle(marker.getTitle());
                 editNameDialog.setDescription(marker.getSnippet());
+
+                mFire.child("markers").child(markerID).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snap) {
+                        System.out.println(snap);
+                        editNameDialog.setDate(snap.child("date").getValue().toString());
+                        editNameDialog.setImage(snap.child("image").getValue().toString());
+                        String creatorID = snap.child("creator").getValue().toString();
+
+                        mFire.child("users").child(creatorID).child("name").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                editNameDialog.setCreator(dataSnapshot.getValue().toString());
+                                System.out.println("Name: "+dataSnapshot.getValue().toString());
+                            }
+
+                            @Override
+                            public void onCancelled(FirebaseError firebaseError) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+                        System.out.println("The read failed: " + firebaseError.getMessage());
+                    }
+                });
                 editNameDialog.show(fm, "fragment_pop_up_map_menu");
             }
         });
@@ -151,6 +192,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         /* Definimos la posicion y vista inicial */
         LatLng santiago = new LatLng(-33.478905, -70.657607);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(santiago, 11));
+
+        addPinToCurrentLoc("Patito", "Cuack", "kjsdlkfjnwse435klmnsdflk;345lknsdf");
     }
 
     /* Esto es para agregar un marcador haciendo touch */
@@ -192,7 +235,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     markerOptions.title(child.child("title").getValue().toString());
                     markerOptions.snippet(child.child("description").getValue().toString());
 
-                    mMap.addMarker(markerOptions);
+                    Marker mark = mMap.addMarker(markerOptions);
+                    currentMarkers.put(mark, child.getKey());
                 }
             }
             @Override
@@ -217,7 +261,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /* Agrega un pin al mapa en la ubicacion del usuario. Ademas este pin se guarda en
      * la BDD de Firebase. */
-    public void addPinToCurrentLoc(String titulo, String descripcion){
+    public void addPinToCurrentLoc(String titulo, String descripcion, String image){
+
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 13));
 
         MarkerOptions markerOptions = new MarkerOptions();
@@ -226,9 +271,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markerOptions.title(titulo);
         markerOptions.snippet(descripcion);
 
-        saveMarkerToFirebase(titulo, descripcion, currentLocation);
-        mMap.addMarker(markerOptions);
+        String id = getRandomString(32);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
 
+        saveMarkerToFirebase(id, dateFormat.format(date).toString(), titulo, descripcion, image, currentLocation);
+
+        Marker mark = mMap.addMarker(markerOptions);
+
+        currentMarkers.put(mark, id);
     }
 
     /* Retorna la ubicacion actual. La ubicacion actual se calcula cuando
@@ -241,10 +292,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    private void saveMarkerToFirebase(String title, String description, LatLng location){
-        String id = getRandomString(32);
+    private void saveMarkerToFirebase(String id, String date, String title, String description, String image, LatLng location){
+
+        mFire.child("markers").child(id).child("creator").setValue(LoginActivity.userID);
+        mFire.child("markers").child(id).child("date").setValue(date);
         mFire.child("markers").child(id).child("title").setValue(title);
         mFire.child("markers").child(id).child("description").setValue(description);
+        mFire.child("markers").child(id).child("image").setValue(image);
         mFire.child("markers").child(id).child("latitude").setValue(location.latitude);
         mFire.child("markers").child(id).child("longitude").setValue(location.longitude);
     }
