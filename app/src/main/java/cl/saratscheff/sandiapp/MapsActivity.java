@@ -286,6 +286,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             shouldCreateMark[2] = true;
                         }
 
+                        // CODIGO PARA MIGRAR IMAGENES!!!
+                        if(child.child("image").exists()){
+                            String image = child.child("image").getValue().toString();
+                            mFire.child("images").child(child.getKey()).setValue(image);
+                        }
+
                         boolean create = true;
 
                         for(int i = 0; i<shouldCreateMark.length; i++){
