@@ -47,10 +47,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps" >
-        </activity>
         <activity android:name=".Formulario" >
         </activity>
         <activity android:name=".ComplaintActivity" >
@@ -65,7 +61,7 @@
                 android:value="cl.saratscheff.sandiapp.MapsActivity" />
         </activity>
         <activity
-            android:name=".NavDrawer"
+            android:name=".MapsActivity"
             android:label="@string/title_activity_nav_drawer"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>

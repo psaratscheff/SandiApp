@@ -38,7 +38,6 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -94,7 +93,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             userName = dataSnapshot.getValue().toString();
-                            startActivity(new Intent(LoginActivity.this, NavDrawer.class));
+                            startActivity(new Intent(LoginActivity.this, MapsActivity.class));
                         }
 
                         @Override
@@ -409,7 +408,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                startActivity(new Intent(LoginActivity.this, NavDrawer.class));
+                startActivity(new Intent(LoginActivity.this, MapsActivity.class));
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
