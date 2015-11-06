@@ -2,7 +2,6 @@ package cl.saratscheff.sandiapp;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -28,6 +27,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
@@ -60,6 +60,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean placingMarker = true;
     private Marker lastMarker = null;
     private FloatingActionButton fab;
+    private TextView navUsername;
+    private TextView navEmail;
     private static LatLng currentLocation = new LatLng(-33.478905, -70.657607);
     public PopUpMapMenu editNameDialog;
 
@@ -72,7 +74,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_nav_drawer);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,6 +83,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .setAction("Action", null).show();
             }
         });
+        */
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -115,6 +118,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.nav_drawer, menu);
+
+        navUsername = (TextView) findViewById(R.id.navUsername);
+        navUsername.setText(LoginActivity.userName);
+        navEmail = (TextView) findViewById(R.id.navEmail);
+        navEmail.setText(LoginActivity.userEmail);
+
         return true;
     }
 
@@ -151,6 +160,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         } else if (id == R.id.nav_send) {
 
+        } else if (id == R.id.nav_logout) {
+            mFire.unauth();
+            startActivity(new Intent(MapsActivity.this, LoginActivity.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -208,11 +220,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 LatLng loc = getCurrentLocation();
-                if(loc.latitude != -33.478905 && loc.longitude != -70.657607){
+                if (loc.latitude != -33.478905 && loc.longitude != -70.657607) {
                     Intent Form = new Intent(MapsActivity.this, Formulario.class);
                     startActivityForResult(Form, 1);
-                }
-                else{
+                } else {
                     AlertDialog alertDialog = new AlertDialog.Builder(MapsActivity.this).create();
                     alertDialog.setTitle("No se pudo encontrar su ubicación");
                     alertDialog.setMessage("Para mostrar su ubicación debe encender el GPS en su dispositivo.");
