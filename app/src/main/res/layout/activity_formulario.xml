@@ -26,14 +26,6 @@
         android:weightSum="1"
         android:gravity="center_vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Nueva Denuncia"
-            android:id="@+id/textView2"
-            android:layout_gravity="center_horizontal" />
-
         <ImageView
             android:layout_width="300dp"
             android:layout_height="200dp"

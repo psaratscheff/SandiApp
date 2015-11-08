@@ -52,6 +52,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     public static String userName = "";
     public static String userID = "";
+    public static String userEmail = "";
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -79,39 +80,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         Firebase.setAndroidContext(this);
         mRef = new Firebase("https://sizzling-heat-8397.firebaseio.com");
 
-
-        /* Si el usuario ya se ha registrado en el telefono, entonces se inicia sesion automaticamente */
-        authEventListener = new ValueEventListener(){
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                if((boolean)dataSnapshot.getValue()){
-                    String[] userData = new String[2];
-                    mRef.getAuth().getAuth().values().toArray(userData);
-                    userID = userData[1];
-                    mRef.child("users").child(userID).child("name").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            userName = dataSnapshot.getValue().toString();
-                            startActivity(new Intent(LoginActivity.this, MapsActivity.class));
-                        }
-
-                        @Override
-                        public void onCancelled(FirebaseError firebaseError) {
-
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        };
-
-        mRef.child(".info/authenticated").addValueEventListener(authEventListener);
-
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -132,7 +100,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                mRef.child(".info/authenticated").removeEventListener(authEventListener);
+                //mRef.child(".info/authenticated").removeEventListener(authEventListener);
                 attemptLogin();
             }
         });
@@ -141,7 +109,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailSignUpButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                mRef.child(".info/authenticated").removeEventListener(authEventListener);
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
             }
         });
@@ -371,6 +338,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 @Override
                 public void onAuthenticated(AuthData authData) {
                     userID = authData.getUid();
+                    userEmail = authData.getProviderData().get("email").toString();
+
                     mRef.child("users").child(userID).child("name").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -408,7 +377,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                startActivity(new Intent(LoginActivity.this, MapsActivity.class));
+
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
