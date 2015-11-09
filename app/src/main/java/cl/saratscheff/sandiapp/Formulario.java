@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,7 +26,7 @@ import com.firebase.client.Firebase;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-
+import java.io.IOException;
 
 
 public class Formulario extends AppCompatActivity {
@@ -104,7 +106,21 @@ public class Formulario extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Uri takenPhotoUri = getPhotoFileUri(photoFileName);
                 // by this point we have the camera photo on disk
-                takenImage = BitmapFactory.decodeFile(takenPhotoUri.getPath());
+                /* GIRAR FOTO */
+                //Obtener rotación
+                ExifInterface exif = null;
+                try {
+                    exif = new ExifInterface(takenPhotoUri.getPath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_UNDEFINED);
+                // Obtener bmp rotado
+                takenImage = rotateBitmap(BitmapFactory.decodeFile(takenPhotoUri.getPath()), orientation);
+                /* ---FIN--- */
+                // La linea siguiente funciona en caso de evitar la rotación: (OLD)
+                // takenImage = BitmapFactory.decodeFile(takenPhotoUri.getPath());
                 // Load the taken image into a preview
 
 
@@ -164,5 +180,49 @@ public class Formulario extends AppCompatActivity {
         byte[] imageAsBytes = Base64.decode(imageFile, Base64.DEFAULT);
         Bitmap bmp = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
         return  bmp;
+    }
+
+    public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
+
+        Matrix matrix = new Matrix();
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_NORMAL:
+                return bitmap;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                matrix.setScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.setRotate(180);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                matrix.setRotate(180);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+                matrix.setRotate(90);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.setRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+                matrix.setRotate(-90);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.setRotate(-90);
+                break;
+            default:
+                return bitmap;
+        }
+        try {
+            Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            bitmap.recycle();
+            return bmRotated;
+        }
+        catch (OutOfMemoryError e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

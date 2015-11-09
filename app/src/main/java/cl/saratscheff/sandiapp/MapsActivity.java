@@ -1,5 +1,6 @@
 package cl.saratscheff.sandiapp;
 
+import android.media.ExifInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -46,6 +47,7 @@ import com.firebase.client.Firebase;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -182,7 +184,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     File mediaStorageDir = new File(
                             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "SandiApp/" + imgpath);
                     String path = mediaStorageDir.getAbsolutePath();
-                    Bitmap bitmap = BitmapFactory.decodeFile(path);
+                    /* GIRAR FOTO */
+                    //Obtener rotación
+                    ExifInterface exif = null;
+                    try {
+                        exif = new ExifInterface(path);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                            ExifInterface.ORIENTATION_UNDEFINED);
+                    // Obtener bmp rotado
+                    Bitmap bitmap = Formulario.rotateBitmap(BitmapFactory.decodeFile(path), orientation);
+                    /* ---FIN--- */
+                    // La linea siguiente funciona en caso de evitar la rotación: (OLD)
+                    // Bitmap bitmap = BitmapFactory.decodeFile(path);
                     String img64 = code(bitmap);
 
                     addPinToCurrentLoc(titulo, descripcion, img64);
