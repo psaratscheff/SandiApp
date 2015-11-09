@@ -2,7 +2,6 @@ package cl.saratscheff.sandiapp;
 
 import android.media.ExifInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
@@ -63,6 +62,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Context context;
     private boolean placingMarker = true;
     private Marker lastMarker = null;
+    private Marker lastMarkerClicked = null;
     private FloatingActionButton fab;
     private TextView navUsername;
     private TextView navEmail;
@@ -106,6 +106,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (lastMarkerClicked != null && lastMarkerClicked.isInfoWindowShown()){
+            lastMarkerClicked.hideInfoWindow();
         } else {
             // Ir al Inicio del SO, en vez de volver al login screen.
             Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -319,6 +321,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         }); */
+
+        /* Para saber cuál fue el último marker presionado (Y saber si su infoWindow sigue abierto) */
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
+        {
+            @Override
+            public boolean onMarkerClick(com.google.android.gms.maps.model.Marker marker)
+            {
+                marker.showInfoWindow();
+                lastMarkerClicked = marker;
+                return true;
+            }
+        });
 
         /* Decimos que hacer cuando se apriete el titulo de un marcador */
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
