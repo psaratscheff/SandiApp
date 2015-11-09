@@ -123,6 +123,7 @@ public class ComplaintActivity extends AppCompatActivity {
     public void sendMessage(View view) {
         EditText editTextMessage = (EditText) findViewById(R.id.editTextMessage);
         String msg = editTextMessage.getText().toString();
+        if (msg.isEmpty()){ return; }
         editTextMessage.getText().clear();
 
         Firebase messagePost = messagesRef.push();
