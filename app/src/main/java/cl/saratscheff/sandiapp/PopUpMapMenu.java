@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.Marker;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -38,12 +40,13 @@ public class PopUpMapMenu extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        /*
         System.out.println(title);
         System.out.println(description);
         System.out.println(date);
         System.out.println(creator);
         System.out.println(image);
+        */
         View view = inflater.inflate(R.layout.fragment_pop_up_map_menu, container);
         mBtnPost = (Button) view.findViewById(R.id.btn_view_post);
         mDescription = (TextView) view.findViewById(R.id.lbl_description);
@@ -65,13 +68,19 @@ public class PopUpMapMenu extends DialogFragment {
         if (bitmap != null)
         {
             mImgPost.setImageBitmap(bitmap);
-        }else{
+        }else {
 
+            if (image != "" | markerID != "")
+                setImage(image, markerID);
+
+        }
+
+            /*
             Bitmap img = decode(image);
             if (img != null) {
                 mImgPost.setImageBitmap(img);
                 FileOutputStream out = null;
-                String strMyImagePath = mediaStorageDir.getAbsolutePath();
+                String strMyImagePath = mediaStorageDir.getPath();
                 FileOutputStream fos = null;
                 try {
                     fos = new FileOutputStream(mediaStorageDir);
@@ -90,7 +99,7 @@ public class PopUpMapMenu extends DialogFragment {
                 String error = "";
 
             }
-        }
+        }*/
 
 
 
@@ -171,9 +180,14 @@ public class PopUpMapMenu extends DialogFragment {
 
     private Bitmap decode(String imageFile)
     {
-        byte[] imageAsBytes = Base64.decode(imageFile, Base64.DEFAULT);
-        Bitmap bmp = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
-        return  bmp;
+        try {
+            byte[] imageAsBytes = Base64.decode(imageFile, Base64.DEFAULT);
+            Bitmap bmp = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
+            return bmp;
+        }catch (Exception e)
+        {
+            return null;
+        }
     }
 
     private void updateDescription(){
