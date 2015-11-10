@@ -30,7 +30,7 @@ class MessageRowAdapter extends BaseAdapter {
         }
 
         public void add(MessageClass msg) {
-            data.add(msg);
+            data.add(0, msg); // Agrego al inicio del array el siguiente mensaje
             notifyDataSetChanged();
         }
 
