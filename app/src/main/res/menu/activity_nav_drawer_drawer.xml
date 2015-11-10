@@ -4,12 +4,11 @@
     <group android:checkableBehavior="single">
         <item android:id="@+id/nav_map" android:icon="@android:drawable/ic_menu_gallery"
             android:title="Mapa" />
-        <item android:id="@+id/nav_newpost" android:icon="@android:drawable/ic_menu_camera"
-            android:title="Nueva denuncia" />
         <item android:id="@+id/nav_myposts" android:icon="@android:drawable/ic_menu_slideshow"
             android:title="Mis denuncias" />
     </group>
 
+    <!--
     <group>
         <item android:title="Estadisticas">
             <menu>
@@ -20,6 +19,7 @@
             </menu>
         </item>
     </group>
+    -->
 
     <group>
         <item android:title="Perfil">
