@@ -12,7 +12,18 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
+
 import cl.saratscheff.sandiapp.dummy.DummyContent;
+
 
 /**
  * A fragment representing a list of Items.
@@ -33,6 +44,8 @@ public class PostFragment extends Fragment implements AbsListView.OnItemClickLis
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private Firebase mFire;
 
     private OnFragmentInteractionListener mListener;
 
@@ -72,10 +85,33 @@ public class PostFragment extends Fragment implements AbsListView.OnItemClickLis
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        final ArrayList<String> myPosts = new ArrayList<>();
+        mFire = new Firebase("https://sizzling-heat-8397.firebaseio.com/markers");
+        mFire.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.hasChildren()) {
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        if (child.child("creator").exists()) {
+                            if (child.child("creator").getValue().toString().equals(LoginActivity.userID)) {
+                                myPosts.add(child.child("title").getValue().toString());
+                            }
+                        }
+                    }
+                }
+            }
 
-        // TODO: Change Adapter to display your content
-        mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS);
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+
+        String [] myPostsArray = new String[myPosts.size()];
+        myPosts.toArray(myPostsArray);
+
+        mAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_list_item_1, android.R.id.text1, myPostsArray);
     }
 
     @Override

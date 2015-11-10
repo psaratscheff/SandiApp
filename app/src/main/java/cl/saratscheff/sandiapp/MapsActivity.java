@@ -122,7 +122,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else if (lastMarkerClicked != null && lastMarkerClicked.isInfoWindowShown()){
             lastMarkerClicked.hideInfoWindow();
         } else if (currentNavSel == R.id.nav_myposts && oldNavSel == R.id.nav_map) {
-
+            if(myPostsFragment != null){
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.remove(myPostsFragment);
+                transaction.commit();
+                myPostsFragment = null;
+                currentNavSel = oldNavSel;
+                currentNavSel = R.id.nav_map;
+                navigationView.getMenu().getItem(0).setChecked(true);
+            }
         } else {
             // Ir al Inicio del SO, en vez de volver al login screen.
             Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -178,7 +186,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.remove(myPostsFragment);
                 transaction.commit();
-                fab.setVisibility(View.VISIBLE);
                 myPostsFragment = null;
             }
 
