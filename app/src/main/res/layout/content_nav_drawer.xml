@@ -17,7 +17,6 @@
         tools:context="cl.saratscheff.sandiapp.MapsActivity"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         xmlns:fab="http://schemas.android.com/tools">
-
     </fragment>
 
     <android.support.design.widget.FloatingActionButton

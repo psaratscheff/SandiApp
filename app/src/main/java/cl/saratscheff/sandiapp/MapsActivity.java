@@ -1,5 +1,8 @@
 package cl.saratscheff.sandiapp;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.app.ListFragment;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -66,6 +69,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private FloatingActionButton fab;
     private TextView navUsername;
     private TextView navEmail;
+    private DrawerLayout drawer;
     private static LatLng currentLocation = new LatLng(-33.478905, -70.657607);
     public PopUpMapMenu editNameDialog;
 
@@ -82,7 +86,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //pedimos permisos necesarios Android6
         PermisionCheck();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -103,7 +107,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else if (lastMarkerClicked != null && lastMarkerClicked.isInfoWindowShown()){
@@ -152,13 +155,39 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camara) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_newpost) {
 
-        } else if (id == R.id.nav_slideshow) {
+            LatLng loc = getCurrentLocation();
+            if (loc.latitude != -33.478905 && loc.longitude != -70.657607) {
+                Intent Form = new Intent(MapsActivity.this, Formulario.class);
+                startActivityForResult(Form, 1);
+            } else {
+                AlertDialog alertDialog = new AlertDialog.Builder(MapsActivity.this).create();
+                alertDialog.setTitle("No se pudo encontrar su ubicación");
+                alertDialog.setMessage("Para mostrar su ubicación debe encender el GPS en su dispositivo.");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
+            }
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_map) {
+
+        } else if (id == R.id.nav_myposts) {
+
+            Fragment newFragment = new ListFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+            // Replace whatever is in the fragment_container view with this fragment,
+            // and add the transaction to the back stack if needed
+            transaction.replace(R.id.map, newFragment);
+            transaction.addToBackStack(null);
+
+            // Commit the transaction
+            transaction.commit();
 
         } else if (id == R.id.nav_share) {
 
@@ -169,7 +198,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             startActivity(new Intent(MapsActivity.this, LoginActivity.class));
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

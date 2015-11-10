@@ -2,13 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_gallery" android:icon="@android:drawable/ic_menu_gallery"
+        <item android:id="@+id/nav_map" android:icon="@android:drawable/ic_menu_gallery"
             android:title="Mapa" />
-        <item android:id="@+id/nav_camara" android:icon="@android:drawable/ic_menu_camera"
+        <item android:id="@+id/nav_newpost" android:icon="@android:drawable/ic_menu_camera"
             android:title="Nueva denuncia" />
-        <item android:id="@+id/nav_slideshow" android:icon="@android:drawable/ic_menu_slideshow"
-            android:title="Denuncias cercanas" />
-        <item android:id="@+id/nav_manage" android:icon="@android:drawable/ic_menu_manage"
+        <item android:id="@+id/nav_myposts" android:icon="@android:drawable/ic_menu_slideshow"
             android:title="Mis denuncias" />
     </group>
 
