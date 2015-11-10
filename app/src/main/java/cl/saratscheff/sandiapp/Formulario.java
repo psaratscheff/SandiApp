@@ -6,14 +6,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +32,8 @@ import com.firebase.client.Firebase;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 
@@ -54,6 +62,7 @@ public class Formulario extends AppCompatActivity {
 
 
         Button publicar =  (Button) findViewById(R.id.buttonPublicar);
+        Button meme =  (Button) findViewById(R.id.buttonMeme);
        titulo =  (EditText) findViewById(R.id.editText2);
        descripcion =  (EditText) findViewById(R.id.editText3);
 
@@ -79,6 +88,21 @@ public class Formulario extends AppCompatActivity {
                     }catch (Exception e){
 
                     }
+            }
+        });
+
+        meme.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                try {
+
+                   // Bitmap TakenLight = ScaleImage(takenImage, 1000, 1000);
+
+                    ivPreview.setImageBitmap(MemeBitmap(takenImage));
+
+                }catch (Exception e){
+
+                }
             }
         });
 
@@ -126,7 +150,7 @@ public class Formulario extends AppCompatActivity {
 
                 ivPreview.setImageBitmap(takenImage);
             } else { // Result was a failure
-                Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No se tomo una foto!", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -225,4 +249,99 @@ public class Formulario extends AppCompatActivity {
             return null;
         }
     }
+
+
+    private Bitmap MemeBitmap(Bitmap bm){
+        Bitmap bm1 = null;
+        Bitmap newBitmap = null;
+
+        try {
+            bm1 = bm;
+
+            Bitmap.Config config = bm1.getConfig();
+            if(config == null){
+                config = Bitmap.Config.ARGB_8888;
+            }
+
+            newBitmap = Bitmap.createBitmap(bm1.getWidth(), bm1.getHeight(), config);
+            Canvas newCanvas = new Canvas(newBitmap);
+
+            newCanvas.drawBitmap(bm1, 0, 0, null);
+
+            String captionString = titulo.getText().toString();
+            if(captionString != null){
+
+                Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
+                paintText.setColor(Color.BLUE);
+                paintText.setTextSize(300);
+                paintText.setStyle(Paint.Style.FILL);
+                paintText.setShadowLayer(10f, 10f, 10f, Color.BLACK);
+
+                Rect rectText = new Rect();
+                paintText.getTextBounds(captionString, 0, captionString.length(), rectText);
+
+                newCanvas.drawText(captionString,
+                        takenImage.getWidth()/2 - rectText.width()/2 , rectText.height()+50, paintText);
+
+                Toast.makeText(getApplicationContext(),
+                        "Meme: " + captionString,
+                        Toast.LENGTH_LONG).show();
+
+
+
+                File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "SandiApp/" + "SandiApp.jpg");
+                String path = mediaStorageDir.getAbsolutePath();
+
+                Bitmap img = ScaleImage(newBitmap, 700, 700);
+                FileOutputStream fos = null;
+                try {
+                    fos = new FileOutputStream(mediaStorageDir);
+                    img.compress(Bitmap.CompressFormat.PNG, 70, fos);
+                    fos.flush();
+                    fos.close();
+                } catch (FileNotFoundException e) {
+
+                    e.printStackTrace();
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+                }
+
+
+
+
+            }else{
+                Toast.makeText(getApplicationContext(),
+                        "caption empty!",
+                        Toast.LENGTH_LONG).show();
+            }
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return newBitmap;
+    }
+
+    public static Bitmap ScaleImage(Bitmap image, int maxHeight, int maxWidth)
+    {
+        int height = image.getHeight();
+        int width = image.getWidth();
+        if (width<maxWidth && height>maxHeight){
+            return image;
+        };
+
+        double ratioH = (double)maxHeight / image.getHeight();
+        double ratioW = (double)maxWidth / image.getWidth();
+
+        double ratio = Math.min(ratioH, ratioW);
+        int newWidth = (int)(image.getHeight() * ratio);
+        int newHeight = (int)(image.getWidth() * ratio);
+
+        Bitmap newImage = Bitmap.createScaledBitmap(image, newHeight, newWidth, true);
+        return newImage;
+    }
+
+
 }
