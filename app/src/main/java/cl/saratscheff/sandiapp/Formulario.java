@@ -296,7 +296,7 @@ public class Formulario extends AppCompatActivity {
                 FileOutputStream fos = null;
                 try {
                     fos = new FileOutputStream(mediaStorageDir);
-                    img.compress(Bitmap.CompressFormat.PNG, 70, fos);
+                    img.compress(Bitmap.CompressFormat.PNG, 100, fos);
                     fos.flush();
                     fos.close();
                 } catch (FileNotFoundException e) {
