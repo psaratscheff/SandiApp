@@ -10,6 +10,9 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class InitActivity extends AppCompatActivity {
 
     private Firebase mRef;
@@ -45,7 +48,16 @@ public class InitActivity extends AppCompatActivity {
                 }
 
                 else {
-                    startActivity(new Intent(InitActivity.this, LoginActivity.class));
+                    TimerTask task = new TimerTask() {
+                        @Override
+                        public void run() {
+                            startActivity(new Intent(InitActivity.this, LoginActivity.class));
+                        }
+                    };
+
+                    // Simulate a long loading process on application startup.
+                    Timer timer = new Timer();
+                    timer.schedule(task, 3000);
                 }
             }
         });

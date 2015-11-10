@@ -1,6 +1,10 @@
 package cl.saratscheff.sandiapp;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.app.ListFragment;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -54,7 +58,8 @@ import java.util.HashMap;
 import java.util.Random;
 
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
+        NavigationView.OnNavigationItemSelectedListener, PostFragment.OnFragmentInteractionListener {
 
     private GoogleMap mMap;
     private Firebase mFire;
@@ -66,11 +71,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private FloatingActionButton fab;
     private TextView navUsername;
     private TextView navEmail;
+    private NavigationView navigationView;
+    private DrawerLayout drawer;
+    private SupportMapFragment mapFragment;
     private static LatLng currentLocation = new LatLng(-33.478905, -70.657607);
     public PopUpMapMenu editNameDialog;
+    private int currentNavSel = 0;
+    private int oldNavSel = 0;
 
     private HashMap<Marker,String> currentMarkers = new HashMap<Marker,String>();
 
+    private Fragment myPostsFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,20 +93,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //pedimos permisos necesarios Android6
         PermisionCheck();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        navigationView.getMenu().getItem(0).setChecked(true);
+        currentNavSel = navigationView.getMenu().getItem(0).getItemId();
 
 
         context = this;
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
@@ -103,11 +115,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else if (lastMarkerClicked != null && lastMarkerClicked.isInfoWindowShown()){
             lastMarkerClicked.hideInfoWindow();
+        } else if (currentNavSel == R.id.nav_myposts && oldNavSel == R.id.nav_map) {
+
         } else {
             // Ir al Inicio del SO, en vez de volver al login screen.
             Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -151,26 +164,42 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        if(id != currentNavSel){
+            oldNavSel = currentNavSel;
+            currentNavSel = id;
+        }
 
-        if (id == R.id.nav_camara) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
 
-        } else if (id == R.id.nav_slideshow) {
+        if (id == R.id.nav_map) {
 
-        } else if (id == R.id.nav_manage) {
+            if(myPostsFragment != null){
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.remove(myPostsFragment);
+                transaction.commit();
+                fab.setVisibility(View.VISIBLE);
+                myPostsFragment = null;
+            }
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_myposts) {
 
-        } else if (id == R.id.nav_send) {
+            myPostsFragment = new PostFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+            // Replace whatever is in the fragment_container view with this fragment,
+            // and add the transaction to the back stack if needed
+            transaction.replace(R.id.map, myPostsFragment);
+            transaction.addToBackStack(null);
+
+            // Commit the transaction
+            transaction.commit();
 
         } else if (id == R.id.nav_logout) {
             mFire.unauth();
             startActivity(new Intent(MapsActivity.this, LoginActivity.class));
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 
@@ -596,5 +625,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             }
         }
+    }
+
+    @Override
+    public void onFragmentInteraction(String str){
+
     }
 }

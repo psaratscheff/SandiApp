@@ -313,6 +313,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailView.setAdapter(adapter);
     }
 
+    @Override
+    public void onBackPressed() {
+        // Ir al Inicio del SO, en vez de volver al login screen.
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        // super.onBackPressed();
+    }
+
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
