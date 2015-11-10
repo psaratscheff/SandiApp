@@ -26,10 +26,12 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ServerValue;
 import com.firebase.client.ValueEventListener;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,16 +94,32 @@ public class ComplaintActivity extends AppCompatActivity {
             // Retrieve new posts as they are added to the database
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChildKey) {
-                MessageClass newMessage = snapshot.getValue(MessageClass.class);
-                ((MessageRowAdapter)listViewDiscussion.getAdapter()).add(newMessage);
-                // System.out.println("Author: " + newMessage.getAuthor());
-                // System.out.println("Message: " + newMessage.getContent());
+                // Cargo el mensaje solo una vez que ya contenga fecha
+                snapshot.getRef().addValueEventListener(new ValueEventListener() {
+                    boolean printed = false; // Evito cargar duplicadamente el mensaje
+
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        if (!printed) {
+                            MessageClass newMessage = snapshot.getValue(MessageClass.class);
+                            ((MessageRowAdapter) listViewDiscussion.getAdapter()).add(newMessage);
+                            printed = true; // Marco mensaje ya impreso
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError error) {
+                        System.out.println("The read failed: " + error.getMessage());
+                    }
+                });
             }
+
             // Get the data on a post that has changed
             @Override
             public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
                 // nada
             }
+
             // Get the data on a post that has been removed
             @Override
             public void onChildRemoved(DataSnapshot snapshot) {
@@ -118,6 +136,21 @@ public class ComplaintActivity extends AppCompatActivity {
                 // nada
             }
         });
+        /*
+        nRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                Long timestamp = (Long) snapshot.getValue();
+                System.out.println(timestamp);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+        nRef.setValue(ServerValue.TIMESTAMP);*/
     }
 
     public void sendMessage(View view) {
@@ -131,5 +164,6 @@ public class ComplaintActivity extends AppCompatActivity {
         post1.put("author", userName);
         post1.put("content", msg);
         messagePost.setValue(post1);
+        messagePost.child("createdAt").setValue(ServerValue.TIMESTAMP);
     }
 }
