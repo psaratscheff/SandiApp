@@ -113,9 +113,6 @@ public class Formulario extends AppCompatActivity {
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, getPhotoFileUri(photoFileName)); // set the image file name
                 // Start the image capture intent to take photo
                 startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-
-
-
             }
         });
     }
@@ -151,6 +148,8 @@ public class Formulario extends AppCompatActivity {
                 ivPreview.setImageBitmap(takenImage);
             } else { // Result was a failure
                 Toast.makeText(this, "No se tomo una foto!", Toast.LENGTH_SHORT).show();
+                // Terminar el activity (Volver al mapa)
+                finish();
             }
         }
     }
