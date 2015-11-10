@@ -1,26 +1,22 @@
 package cl.saratscheff.sandiapp;
 
-import android.annotation.TargetApi;
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
@@ -30,8 +26,6 @@ import com.firebase.client.ServerValue;
 import com.firebase.client.ValueEventListener;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +38,11 @@ public class ComplaintActivity extends AppCompatActivity {
     private String markerID;
     private String userName;
     private Bitmap image;
+    private Bitmap HDimage;
+
+    private Dialog hdImageDialog;
+    private ProgressDialog pgDialog;
+    private Boolean loadingHDimage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,26 +65,46 @@ public class ComplaintActivity extends AppCompatActivity {
         image = BitmapFactory.decodeFile(path);
         imageButton.setImageBitmap(image);
 
-
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-                final Dialog nagDialog = new Dialog(ComplaintActivity.this,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                nagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                nagDialog.setCancelable(false);
-                nagDialog.setContentView(R.layout.full_screen_image);
-                Button btnClose = (Button)nagDialog.findViewById(R.id.btnIvClose);
-                ImageView ivPreview = (ImageView)nagDialog.findViewById(R.id.imageViewPreview);
-                btnClose.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View arg0) {
+                pgDialog = new ProgressDialog(ComplaintActivity.this);
+                pgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                pgDialog.setMessage("Cargando imagen. Por favor espere...");
+                pgDialog.setIndeterminate(true);
+                pgDialog.setCanceledOnTouchOutside(false);
+                pgDialog.setOnCancelListener(
+                        new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                loadingHDimage = false;
+                            }
+                        });
+                loadingHDimage = true;
+                pgDialog.show();
 
-                        nagDialog.dismiss();
+                nRef.child("hd-images").child(markerID).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (loadingHDimage) { // En caso de no haber cancelado el cargar la imagen
+                            pgDialog.hide();
+                            HDimage = decode(dataSnapshot.getValue().toString());
+                            hdImageDialog = new Dialog(ComplaintActivity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                            hdImageDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            hdImageDialog.setCancelable(true); // Por defecto es true... se podria sacar, pero por si acaso (No hay otra forma de retroceder que con el back button)
+                            hdImageDialog.setContentView(R.layout.full_screen_image);
+                            final ImageView ivPreview = (ImageView) hdImageDialog.findViewById(R.id.imageViewPreview);
+                            ivPreview.setImageBitmap(HDimage);
+                            loadingHDimage = false;
+                            hdImageDialog.show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+
                     }
                 });
-                ivPreview.setImageBitmap(image);
-                nagDialog.show();
             }
         });
 
@@ -153,6 +172,11 @@ public class ComplaintActivity extends AppCompatActivity {
         nRef.setValue(ServerValue.TIMESTAMP);*/
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed(); // Los dialogos se manejan solos (canelables).
+    }
+
     public void sendMessage(View view) {
         EditText editTextMessage = (EditText) findViewById(R.id.editTextMessage);
         String msg = editTextMessage.getText().toString();
@@ -165,5 +189,17 @@ public class ComplaintActivity extends AppCompatActivity {
         post1.put("content", msg);
         messagePost.setValue(post1);
         messagePost.child("createdAt").setValue(ServerValue.TIMESTAMP);
+    }
+
+    private Bitmap decode(String imageFile)
+    {
+        try {
+            byte[] imageAsBytes = Base64.decode(imageFile, Base64.DEFAULT);
+            Bitmap bmp = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
+            return bmp;
+        }catch (Exception e)
+        {
+            return null;
+        }
     }
 }

@@ -287,8 +287,6 @@ public class Formulario extends AppCompatActivity {
                         "Meme: " + captionString,
                         Toast.LENGTH_LONG).show();
 
-
-
                 File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "SandiApp/" + "SandiApp.jpg");
                 String path = mediaStorageDir.getAbsolutePath();
 
@@ -306,9 +304,6 @@ public class Formulario extends AppCompatActivity {
 
                     e.printStackTrace();
                 }
-
-
-
 
             }else{
                 Toast.makeText(getApplicationContext(),

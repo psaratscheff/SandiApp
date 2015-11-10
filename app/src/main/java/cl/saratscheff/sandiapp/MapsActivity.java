@@ -56,6 +56,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -236,8 +238,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // La linea siguiente funciona en caso de evitar la rotación: (OLD)
                     // Bitmap bitmap = BitmapFactory.decodeFile(path);
                     String img64 = code(bitmap);
+                    String imgHD64 = codeHD(bitmap);
 
-                    addPinToCurrentLoc(titulo, descripcion, img64);
+                    addPinToCurrentLoc(titulo, descripcion, img64, imgHD64);
 
                     String done = "";
                 }
@@ -520,7 +523,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /* Agrega un pin al mapa en la ubicacion del usuario. Ademas este pin se guarda en
      * la BDD de Firebase. */
-    public void addPinToCurrentLoc(String titulo, String descripcion, String image){
+    public void addPinToCurrentLoc(String titulo, String descripcion, String image, String imageHD){
 
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 13));
 
@@ -528,7 +531,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
 
-        saveMarkerToFirebase(id, dateFormat.format(date).toString(), titulo, descripcion, image, currentLocation);
+        saveMarkerToFirebase(id, dateFormat.format(date).toString(), titulo, descripcion, image, imageHD, currentLocation);
 
     }
 
@@ -542,7 +545,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    private void saveMarkerToFirebase(String id, String date, String title, String description, String image, LatLng location){
+    private void saveMarkerToFirebase(String id, String date, String title, String description, String image, String imageHD, LatLng location){
 
         mFire.child("markers").child(id).child("creator").setValue(LoginActivity.userID);
         mFire.child("markers").child(id).child("date").setValue(date);
@@ -552,11 +555,42 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //mFire.child("markers").child(id).child("image").setValue(image);
         mFire.child("markers").child(id).child("latitude").setValue(location.latitude);
         mFire.child("markers").child(id).child("longitude").setValue(location.longitude);
+
+        final String mId = id;
+        final String hdImg = imageHD;
+        // La foto HD la cargamos después de haber cargado el resto... (Tarda un rato)
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                mFire.child("hd-images").child(mId).setValue(hdImg);
+            }
+        }, 3000);
     }
 
     private String code(Bitmap imgOriginalSize) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Bitmap img = ScaleImage(imgOriginalSize, 300, 300); // Ajustar tamaño, maximo 300x300px
+        img.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] b = baos.toByteArray();
+        String temp = null;
+        try {
+            System.gc();
+            temp = Base64.encodeToString(b, Base64.DEFAULT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } catch (OutOfMemoryError e) {
+            baos = new ByteArrayOutputStream();
+            img.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+            b = baos.toByteArray();
+            temp = Base64.encodeToString(b, Base64.DEFAULT);
+            Log.e("EWN", "Out of memory error catched");
+        }
+        return temp;
+    }
+
+    private String codeHD(Bitmap imgOriginalSize) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Bitmap img = ScaleImage(imgOriginalSize, 1920, 1920); // Ajustar tamaño, maximo 1920x1920 (FullHD=1920x1080p)
         img.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] b = baos.toByteArray();
         String temp = null;
