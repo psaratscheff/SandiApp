@@ -102,8 +102,16 @@ public class PopUpMapMenu extends DialogFragment {
         }*/
 
 
-
-
+        //Se abre el ComplaintActivity al presionar el boton o Imagen
+        mImgPost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO Abrir vista del post
+                Intent myIntent = new Intent(v.getContext(), ComplaintActivity.class);
+                myIntent.putExtra("markerID", markerID); // No puedo pasar la imagen por su tamaño!!
+                PopUpMapMenu.this.startActivity(myIntent);
+            }
+        });
         mBtnPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
