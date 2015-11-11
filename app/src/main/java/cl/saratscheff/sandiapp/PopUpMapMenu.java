@@ -40,13 +40,6 @@ public class PopUpMapMenu extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        /*
-        System.out.println(title);
-        System.out.println(description);
-        System.out.println(date);
-        System.out.println(creator);
-        System.out.println(image);
-        */
         View view = inflater.inflate(R.layout.fragment_pop_up_map_menu, container);
         mBtnPost = (Button) view.findViewById(R.id.btn_view_post);
         mDescription = (TextView) view.findViewById(R.id.lbl_description);
