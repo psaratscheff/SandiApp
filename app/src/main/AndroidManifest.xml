@@ -44,7 +44,8 @@
 
         <activity
             android:name=".Formulario"
-            android:label="Nueva denuncia" >
+            android:label="Nueva denuncia"
+            android:configChanges="keyboardHidden|orientation|screenSize">
         </activity>
         <activity android:name=".ComplaintActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
