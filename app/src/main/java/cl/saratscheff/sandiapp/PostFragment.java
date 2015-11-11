@@ -46,6 +46,7 @@ public class PostFragment extends Fragment implements AbsListView.OnItemClickLis
     private String mParam2;
 
     private Firebase mFire;
+    private ArrayList<String> myPosts = new ArrayList<>();
 
     private OnFragmentInteractionListener mListener;
 
@@ -85,19 +86,28 @@ public class PostFragment extends Fragment implements AbsListView.OnItemClickLis
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        final ArrayList<String> myPosts = new ArrayList<>();
+
         mFire = new Firebase("https://sizzling-heat-8397.firebaseio.com/markers");
+
         mFire.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+                myPosts = new ArrayList<String>();
                 if (snapshot.hasChildren()) {
                     for (DataSnapshot child : snapshot.getChildren()) {
-                        if (child.child("creator").exists()) {
+                        if (child.child("creator").exists() && child.child("title").exists()) {
                             if (child.child("creator").getValue().toString().equals(LoginActivity.userID)) {
                                 myPosts.add(child.child("title").getValue().toString());
                             }
                         }
                     }
+                    String [] myPostsArray = new String[myPosts.size()];
+                    myPosts.toArray(myPostsArray);
+
+                    mAdapter = new ArrayAdapter<String>(getActivity(),
+                            android.R.layout.simple_list_item_1, android.R.id.text1, myPostsArray);
+
+                    mListView.setAdapter(mAdapter);
                 }
             }
 
@@ -107,11 +117,8 @@ public class PostFragment extends Fragment implements AbsListView.OnItemClickLis
             }
         });
 
-        String [] myPostsArray = new String[myPosts.size()];
-        myPosts.toArray(myPostsArray);
-
         mAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, myPostsArray);
+                android.R.layout.simple_list_item_1, android.R.id.text1, new String[]{""});
     }
 
     @Override
