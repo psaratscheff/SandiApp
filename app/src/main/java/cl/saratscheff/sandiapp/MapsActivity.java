@@ -34,6 +34,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
@@ -164,7 +165,37 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.tipoDenuncia1) {
+            if (item.isChecked()) {
+                item.setChecked(false);
+                Toast.makeText(this, "Denuncia 1 Desactivado", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                item.setChecked(true);
+                Toast.makeText(this, "Denuncia 1 Activado", Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        }
+        if (id == R.id.tipoDenuncia2) {
+            if (item.isChecked()) {
+                item.setChecked(false);
+                Toast.makeText(this, "Denuncia 2 Desactivado", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                item.setChecked(true);
+                Toast.makeText(this, "Denuncia 2 Activado", Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        }
+        if (id == R.id.tipoDenuncia3) {
+            if (item.isChecked()) {
+                item.setChecked(false);
+                Toast.makeText(this, "Denuncia 3 Desactivado", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                item.setChecked(true);
+                Toast.makeText(this, "Denuncia 3 Activado", Toast.LENGTH_SHORT).show();
+            }
             return true;
         }
 
