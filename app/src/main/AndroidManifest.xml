@@ -47,7 +47,8 @@
             android:label="Nueva denuncia" >
         </activity>
         <activity android:name=".ComplaintActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize">
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/complaint_title">
             android:parentActivityName=".MapsActivity"
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

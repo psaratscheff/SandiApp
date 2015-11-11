@@ -35,6 +35,7 @@ public class ComplaintActivity extends AppCompatActivity {
     private Firebase nRef;
     private Firebase messagesRef;
 
+    private String title;
     private String markerID;
     private String userName;
     private Bitmap image;
@@ -55,6 +56,9 @@ public class ComplaintActivity extends AppCompatActivity {
         userName = LoginActivity.userName;
         Intent intent = getIntent();
         markerID = intent.getStringExtra("markerID");
+        title = intent.getStringExtra("title");
+
+        this.setTitle(title); // Seteo el title del activity como el del complaint.
 
         Firebase.setAndroidContext(this);
         nRef = new Firebase("https://sizzling-heat-8397.firebaseio.com/");
