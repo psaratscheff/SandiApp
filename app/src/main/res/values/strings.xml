@@ -28,4 +28,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="otras_denuncias">Otras denuncias...</string>
+    <string name="tipoDenuncia1">tipoDenuncia1</string>
+    <string name="tipoDenuncia2">tipoDenuncia2</string>
+    <string name="tipoDenuncia3">tipoDenuncia3</string>
 </resources>

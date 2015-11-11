@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+        <group
+            android:id="@+id/checkable_group"
+            android:checkableBehavior="all"
+            app:showAsAction="never" >
+            <item
+                android:id="@+id/tipoDenuncia1"
+                android:checked="true"
+                android:title="@string/tipoDenuncia1" />
+            <item
+                android:id="@+id/tipoDenuncia2"
+                android:title="@string/tipoDenuncia2" />
+            <item
+                android:id="@+id/tipoDenuncia3"
+                android:title="@string/tipoDenuncia3" />
+        </group>
 </menu>
+
+    <!-- Opción antigua -->
+
+    <!--<item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:orderInCategory="100"
+        app:showAsAction="never" />-->
