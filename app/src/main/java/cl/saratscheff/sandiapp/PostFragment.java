@@ -1,14 +1,17 @@
 package cl.saratscheff.sandiapp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
@@ -21,6 +24,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 import cl.saratscheff.sandiapp.dummy.DummyContent;
 
@@ -47,6 +52,7 @@ public class PostFragment extends Fragment implements AbsListView.OnItemClickLis
 
     private Firebase mFire;
     private ArrayList<String> myPosts = new ArrayList<>();
+    private Context context;
 
     private OnFragmentInteractionListener mListener;
 
@@ -55,11 +61,6 @@ public class PostFragment extends Fragment implements AbsListView.OnItemClickLis
      */
     private AbsListView mListView;
 
-    /**
-     * The Adapter which will be used to populate the ListView/GridView with
-     * Views.
-     */
-    private ListAdapter mAdapter;
 
     // TODO: Rename and change types of parameters
     public static PostFragment newInstance(String param1, String param2) {
@@ -76,6 +77,9 @@ public class PostFragment extends Fragment implements AbsListView.OnItemClickLis
      * fragment (e.g. upon screen orientation changes).
      */
     public PostFragment() {
+    }
+    public PostFragment(Context cont) {
+        this.context = cont;
     }
 
     @Override
@@ -95,19 +99,11 @@ public class PostFragment extends Fragment implements AbsListView.OnItemClickLis
                 myPosts = new ArrayList<String>();
                 if (snapshot.hasChildren()) {
                     for (DataSnapshot child : snapshot.getChildren()) {
-                        if (child.child("creator").exists() && child.child("title").exists()) {
-                            if (child.child("creator").getValue().toString().equals(LoginActivity.userID)) {
-                                myPosts.add(child.child("title").getValue().toString());
-                            }
-                        }
+                        Post newPost = child.getValue(Post.class);
+
+                        if(newPost.getCreator().equals(LoginActivity.userID))
+                            ((PostsAdapter) mListView.getAdapter()).add(newPost);
                     }
-                    String [] myPostsArray = new String[myPosts.size()];
-                    myPosts.toArray(myPostsArray);
-
-                    mAdapter = new ArrayAdapter<String>(getActivity(),
-                            android.R.layout.simple_list_item_1, android.R.id.text1, myPostsArray);
-
-                    mListView.setAdapter(mAdapter);
                 }
             }
 
@@ -116,9 +112,6 @@ public class PostFragment extends Fragment implements AbsListView.OnItemClickLis
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
         });
-
-        mAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, new String[]{""});
     }
 
     @Override
@@ -128,7 +121,7 @@ public class PostFragment extends Fragment implements AbsListView.OnItemClickLis
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
-        ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
+        ((AdapterView<ListAdapter>) mListView).setAdapter(new PostsAdapter(context));
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
@@ -190,4 +183,75 @@ public class PostFragment extends Fragment implements AbsListView.OnItemClickLis
         public void onFragmentInteraction(String id);
     }
 
+
+}
+
+
+
+
+
+class PostsAdapter extends BaseAdapter{
+
+    Context context;
+    ArrayList<Post> data;
+    private static LayoutInflater inflater = null;
+
+    public PostsAdapter(Context context) {
+        this.context = context;
+        data = new ArrayList<Post>();
+        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    public void add(Post post) {
+        data.add(0, post);
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getCount() {
+        return data.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return data.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        // TODO Auto-generated method stub
+        return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        // TODO Auto-generated method stub
+        View vi = convertView;
+        if (vi == null)
+            vi = inflater.inflate(R.layout.fragment_post_list, null);
+        TextView textViewTitle = (TextView) vi.findViewById(R.id.textViewPostTitle);
+        TextView textViewDate = (TextView) vi.findViewById(R.id.textViewPostDate);
+        textViewTitle.setText(data.get(position).getTitle());
+        textViewDate.setText(data.get(position).getDate());
+
+        return vi;
+    }
+}
+
+class Post{
+    private String title;
+    private String description;
+    private String date;
+    private String latitude;
+    private String longitude;
+    private String creator;
+
+    public Post() { }
+
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+    public String getDate(){ return date; }
+    public String getLatitude(){ return latitude; }
+    public String getLongitude(){ return longitude; }
+    public String getCreator(){ return creator; }
 }

@@ -132,6 +132,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 currentNavSel = oldNavSel;
                 currentNavSel = R.id.nav_map;
                 navigationView.getMenu().getItem(0).setChecked(true);
+                setTitle(R.string.title_activity_maps);
             }
         } else {
             // Ir al Inicio del SO, en vez de volver al login screen.
@@ -189,11 +190,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 transaction.remove(myPostsFragment);
                 transaction.commit();
                 myPostsFragment = null;
+                setTitle(R.string.title_activity_maps);
             }
 
         } else if (id == R.id.nav_myposts) {
 
-            myPostsFragment = new PostFragment();
+            myPostsFragment = new PostFragment(context);
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
             // Replace whatever is in the fragment_container view with this fragment,
@@ -203,6 +205,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             // Commit the transaction
             transaction.commit();
+            setTitle(R.string.title_activity_myposts);
 
         } else if (id == R.id.nav_logout) {
             mFire.unauth();
