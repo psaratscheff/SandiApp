@@ -43,6 +43,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -58,6 +59,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.locks.LockSupport;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -500,7 +502,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             markerOptions.position(loc);
                             markerOptions.title(child.child("title").getValue().toString());
                             markerOptions.snippet(child.child("description").getValue().toString());
-
+                            if(child.child("creator").exists()){
+                                if(child.child("creator").getValue().toString().equals(LoginActivity.userID)){
+                                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                                }
+                            }
                             Marker mark = mMap.addMarker(markerOptions);
                             currentMarkers.put(mark, child.getKey());
                         }
