@@ -271,7 +271,7 @@ public class Formulario extends AppCompatActivity {
             if(captionString != null){
 
                 Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
-                paintText.setColor(Color.BLUE);
+                paintText.setColor(Color.BLACK);
                 paintText.setTextSize(300);
                 paintText.setStyle(Paint.Style.FILL);
                 paintText.setShadowLayer(10f, 10f, 10f, Color.BLACK);

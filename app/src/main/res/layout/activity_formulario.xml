@@ -29,13 +29,15 @@
         android:weightSum="1"
         android:gravity="center_vertical">
 
+
         <ImageView
             android:layout_width="300dp"
             android:layout_height="200dp"
             android:id="@+id/imageView"
             android:layout_gravity="center_horizontal"
             android:onClick = "Image1"
-            android:src="@drawable/camera" />
+            android:src="@drawable/camera"
+            />
 
         <TextView
             android:layout_width="wrap_content"
@@ -75,14 +77,19 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Meme"
+            android:text="Generar Meme"
             android:id="@+id/buttonMeme"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            style="?android:attr/borderlessButtonStyle"
+            android:backgroundTintMode="add"
+            android:textColor="#49a841" />
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Publicar"
             android:id="@+id/buttonPublicar"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:background="#49a841"
+            android:textColor="#ffffff" />
     </LinearLayout>
 </RelativeLayout>
