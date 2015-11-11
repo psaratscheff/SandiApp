@@ -40,13 +40,6 @@ public class PopUpMapMenu extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        /*
-        System.out.println(title);
-        System.out.println(description);
-        System.out.println(date);
-        System.out.println(creator);
-        System.out.println(image);
-        */
         View view = inflater.inflate(R.layout.fragment_pop_up_map_menu, container);
         mBtnPost = (Button) view.findViewById(R.id.btn_view_post);
         mDescription = (TextView) view.findViewById(R.id.lbl_description);
@@ -109,6 +102,7 @@ public class PopUpMapMenu extends DialogFragment {
                 //TODO Abrir vista del post
                 Intent myIntent = new Intent(v.getContext(), ComplaintActivity.class);
                 myIntent.putExtra("markerID", markerID); // No puedo pasar la imagen por su tamaño!!
+                myIntent.putExtra("title", title); // Paso el titulo para colocar en el "Header"
                 PopUpMapMenu.this.startActivity(myIntent);
             }
         });

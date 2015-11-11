@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cl.saratscheff.sandiapp" >
+    package="cl.saratscheff.sandiapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- To auto-complete the email text field in the login form with the user's emails -->
@@ -44,14 +44,12 @@
 
         <activity
             android:name=".Formulario"
-            android:label="Nueva denuncia" >
+            android:label="Nueva denuncia"
+            android:configChanges="keyboardHidden|orientation|screenSize">
         </activity>
-        <activity android:name=".ComplaintActivity" >
-
-            <!--
-            android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar" >
-            -->
+        <activity android:name=".ComplaintActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/complaint_title">
             android:parentActivityName=".MapsActivity"
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -60,7 +58,8 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_nav_drawer"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="keyboardHidden|orientation|screenSize">
         </activity>
         <activity
             android:name=".InitActivity"
