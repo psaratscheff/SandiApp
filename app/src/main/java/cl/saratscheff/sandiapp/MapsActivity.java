@@ -1,10 +1,8 @@
 package cl.saratscheff.sandiapp;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
-import android.app.ListFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.media.ExifInterface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -36,6 +34,7 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
@@ -60,7 +59,6 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.locks.LockSupport;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -126,13 +124,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             lastMarkerClicked.hideInfoWindow();
         } else if (currentNavSel == R.id.nav_myposts && oldNavSel == R.id.nav_map) {
             if(myPostsFragment != null){
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 transaction.remove(myPostsFragment);
                 transaction.commit();
                 myPostsFragment = null;
                 currentNavSel = oldNavSel;
                 currentNavSel = R.id.nav_map;
                 navigationView.getMenu().getItem(0).setChecked(true);
+                setTitle(R.string.title_activity_maps);
             }
         } else {
             // Ir al Inicio del SO, en vez de volver al login screen.
@@ -216,16 +215,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (id == R.id.nav_map) {
 
             if(myPostsFragment != null){
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 transaction.remove(myPostsFragment);
                 transaction.commit();
                 myPostsFragment = null;
+                setTitle(R.string.title_activity_maps);
             }
 
         } else if (id == R.id.nav_myposts) {
 
-            myPostsFragment = new PostFragment();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            myPostsFragment = new PostFragment().setContext(context);
+
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
             // Replace whatever is in the fragment_container view with this fragment,
             // and add the transaction to the back stack if needed
@@ -234,6 +235,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             // Commit the transaction
             transaction.commit();
+            setTitle(R.string.title_activity_myposts);
 
         } else if (id == R.id.nav_logout) {
             mFire.unauth();
@@ -421,14 +423,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mFire.child("markers").child(markerID).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snap) {
-                        editNameDialog.setDate(snap.child("date").getValue().toString());
-                        editNameDialog.setMarkerID(markerID);
-                        String creatorID = snap.child("creator").getValue().toString();
+
+                        String creatorID = "";
+                        try {
+                            editNameDialog.setDate(snap.child("date").getValue().toString());
+                            editNameDialog.setMarkerID(markerID);
+                            creatorID = snap.child("creator").getValue().toString();
+                        } catch (NullPointerException e) {
+                        }
 
                         mFire.child("users").child(creatorID).child("name").addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                editNameDialog.setCreator(dataSnapshot.getValue().toString());
+                                if (dataSnapshot.exists()) {
+                                    editNameDialog.setCreator(dataSnapshot.getValue().toString());
+                                }
                             }
 
                             @Override
@@ -440,7 +449,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         mFire.child("images").child(markerID).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                editNameDialog.setImage(dataSnapshot.getValue().toString(), markerID);
+                                if (dataSnapshot.exists()) {
+                                    editNameDialog.setImage(dataSnapshot.getValue().toString(), markerID);
+                                }
                             }
 
                             @Override
@@ -490,7 +501,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void loadPins(){
-        Firebase mFireMarkers = mFire.child("markers");
+        final Firebase mFireMarkers = mFire.child("markers");
 
         mFireMarkers.addValueEventListener(new ValueEventListener() {
             @Override
@@ -547,6 +558,33 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onCancelled(FirebaseError firebaseError) {
                 System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+
+        mFireMarkers.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                mMap.clear();
+                loadPins();
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
             }
         });
     }
