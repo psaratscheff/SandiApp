@@ -1,12 +1,14 @@
 package cl.saratscheff.sandiapp;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
@@ -260,6 +262,8 @@ public class PostFragment extends Fragment implements ListView.OnItemClickListen
             PostsOptionsFragment pof = new PostsOptionsFragment();
             Post pos = (Post)((PostsAdapter) mListView.getAdapter()).getItem(position);
             pof.setPostID(pos.id);
+            pof.setLocation(Double.parseDouble(pos.latitude), Double.parseDouble(pos.longitude));
+            pof.setParent(this);
             pof.show(getFragmentManager(), "fragment_posts_options");
         }
     }

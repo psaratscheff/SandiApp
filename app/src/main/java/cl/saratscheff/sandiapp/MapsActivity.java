@@ -247,8 +247,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         try {
@@ -589,7 +587,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-
     private String getRandomString(int length) {
         Random rnd = new Random();
         String[] abc123 = new String[]{"a","b","c","d","e","f","g","h","i","j","k","l",
@@ -607,7 +604,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * la BDD de Firebase. */
     public void addPinToCurrentLoc(String titulo, String descripcion, String image, String imageHD){
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 13));
+        focusCamera(currentLocation, 13);
 
         String id = getRandomString(32);
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -625,7 +622,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static LatLng getCurrentLocation(){
         return currentLocation;
     }
-
 
     private void saveMarkerToFirebase(String id, String date, String title, String description, String image, String imageHD, LatLng location){
 
@@ -746,5 +742,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onFragmentInteraction(String str){
 
+    }
+
+    public NavigationView getNavigationView(){
+        return navigationView;
+    }
+
+    public void focusCamera(LatLng loc, int zoom){
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, zoom));
     }
 }
