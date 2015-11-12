@@ -82,14 +82,14 @@
             android:layout_gravity="center_horizontal"
             style="?android:attr/borderlessButtonStyle"
             android:backgroundTintMode="add"
-            android:textColor="#49a841" />
+            android:textColor="@color/colorPrimary" />
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Publicar"
             android:id="@+id/buttonPublicar"
             android:layout_gravity="center_horizontal"
-            android:background="#49a841"
-            android:textColor="#ffffff" />
+            android:background="@color/colorPrimary"
+            android:textColor="@color/alternative" />
     </LinearLayout>
 </RelativeLayout>
