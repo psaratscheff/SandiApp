@@ -1,11 +1,16 @@
 package cl.saratscheff.sandiapp;
 
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.view.ActionProvider;
+import android.view.ContextMenu;
+import android.view.SubMenu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -52,6 +57,7 @@ import com.firebase.client.Firebase;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.security.acl.Group;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -76,6 +82,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private TextView navEmail;
     private NavigationView navigationView;
     private DrawerLayout drawer;
+    private Menu menuCategory;
     private SupportMapFragment mapFragment;
     private static LatLng currentLocation = new LatLng(-33.478905, -70.657607);
     public PopUpMapMenu editNameDialog;
@@ -85,6 +92,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private HashMap<Marker,String> currentMarkers = new HashMap<Marker,String>();
 
     private Fragment myPostsFragment = null;
+    private MenuItem[] categoriesMenuItems = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +121,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
     }
 
     @Override
@@ -153,6 +160,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         navEmail = (TextView) findViewById(R.id.navEmail);
         navEmail.setText(LoginActivity.userEmail);
 
+        String[] categories = getResources().getStringArray(R.array.posts_categories);
+
+        for(String cat: categories){
+            menu.add(cat).setCheckable(true);
+        }
+
+        categoriesMenuItems = new MenuItem[menu.size()];
+        for(int i=0; i<menu.size(); i++){
+            categoriesMenuItems[i] = menu.getItem(i);
+        }
         return true;
     }
 
@@ -162,40 +179,56 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        boolean reloadMap = true;
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.tipoDenuncia1) {
-            if (item.isChecked()) {
-                item.setChecked(false);
-                Toast.makeText(this, "Denuncia 1 Desactivado", Toast.LENGTH_SHORT).show();
+        if(item.getTitle().equals("Todos") && !item.isChecked()){
+            for(MenuItem mi: categoriesMenuItems){
+                if(mi != item){
+                    mi.setChecked(false);
+                }
             }
-            else {
-                item.setChecked(true);
-                Toast.makeText(this, "Denuncia 1 Activado", Toast.LENGTH_SHORT).show();
-            }
-            return true;
         }
-        if (id == R.id.tipoDenuncia2) {
-            if (item.isChecked()) {
-                item.setChecked(false);
-                Toast.makeText(this, "Denuncia 2 Desactivado", Toast.LENGTH_SHORT).show();
+
+        else if(!item.getTitle().equals("Todos") && !item.isChecked()){
+            for(MenuItem mi: categoriesMenuItems){
+                if(mi.getTitle().equals("Todos")){
+                    mi.setChecked(false);
+                    break;
+                }
             }
-            else {
-                item.setChecked(true);
-                Toast.makeText(this, "Denuncia 2 Activado", Toast.LENGTH_SHORT).show();
-            }
-            return true;
         }
-        if (id == R.id.tipoDenuncia3) {
-            if (item.isChecked()) {
+
+        if (item.isChecked()) {
+            MenuItem aux = null;
+            boolean isAnyChecked = false;
+            for(MenuItem mi: categoriesMenuItems){
+                if(mi.isChecked() && mi != item && !mi.getTitle().equals("Todos")){
+                    isAnyChecked = true;
+                    break;
+                }
+                if(mi.getTitle().equals("Todos")){
+                    aux = mi;
+                }
+            }
+            if(!isAnyChecked && !item.getTitle().equals("Todos")) {
+                aux.setChecked(true);
                 item.setChecked(false);
-                Toast.makeText(this, "Denuncia 3 Desactivado", Toast.LENGTH_SHORT).show();
             }
-            else {
-                item.setChecked(true);
-                Toast.makeText(this, "Denuncia 3 Activado", Toast.LENGTH_SHORT).show();
+            else if(!isAnyChecked && item.getTitle().equals("Todos")){
+                reloadMap = false;
             }
-            return true;
+            else{
+                item.setChecked(false);
+            }
+
+        }
+        else {
+            item.setChecked(true);
+        }
+
+        if(reloadMap) {
+            mMap.clear();
+            loadPins();
         }
 
         return super.onOptionsItemSelected(item);
@@ -256,6 +289,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (resultCode == Activity.RESULT_OK) {
                     String titulo = data.getStringExtra("titulo");
                     String descripcion = data.getStringExtra("descripcion");
+                    String categoria = data.getStringExtra("categoria");
                     String imgpath = data.getStringExtra("img");
 
 
@@ -280,7 +314,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     String img64 = code(bitmap);
                     String imgHD64 = codeHD(bitmap);
 
-                    addPinToCurrentLoc(titulo, descripcion, img64, imgHD64);
+                    addPinToCurrentLoc(titulo, descripcion, categoria, img64, imgHD64);
 
                     String done = "";
                 }
@@ -507,7 +541,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if(snapshot.hasChildren()){
                     for (DataSnapshot child : snapshot.getChildren()) {
 
-                        boolean[] shouldCreateMark = new boolean[]{false, false, false};
+                        boolean[] shouldCreateMark = new boolean[]{false, false, false, false};
 
                         LatLng loc = null;
                         if(child.child("latitude").exists() && child.child("longitude").exists()){
@@ -527,6 +561,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         if(child.child("description").exists()){
                             description = child.child("description").getValue().toString();
                             shouldCreateMark[2] = true;
+                        }
+
+                        if(child.child("category").exists()){
+                            String category = child.child("category").getValue().toString();
+                            boolean isCategorySelected = false;
+                            for(int i=0; i<categoriesMenuItems.length; i++){
+                                if(categoriesMenuItems[i].isChecked() && (categoriesMenuItems[i].getTitle().equals("Todos")
+                                        || categoriesMenuItems[i].getTitle().equals(category))){
+                                    shouldCreateMark[3] = true;
+                                    break;
+                                }
+                            }
                         }
 
                         boolean create = true;
@@ -602,7 +648,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /* Agrega un pin al mapa en la ubicacion del usuario. Ademas este pin se guarda en
      * la BDD de Firebase. */
-    public void addPinToCurrentLoc(String titulo, String descripcion, String image, String imageHD){
+    public void addPinToCurrentLoc(String titulo, String descripcion, String category, String image, String imageHD){
 
         focusCamera(currentLocation, 13);
 
@@ -610,7 +656,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
 
-        saveMarkerToFirebase(id, dateFormat.format(date).toString(), titulo, descripcion, image, imageHD, currentLocation);
+        saveMarkerToFirebase(id, dateFormat.format(date).toString(), titulo, descripcion, category, image, imageHD, currentLocation);
 
     }
 
@@ -623,12 +669,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return currentLocation;
     }
 
-    private void saveMarkerToFirebase(String id, String date, String title, String description, String image, String imageHD, LatLng location){
+    private void saveMarkerToFirebase(String id, String date, String title, String description, String category, String image, String imageHD, LatLng location){
 
         mFire.child("markers").child(id).child("creator").setValue(LoginActivity.userID);
         mFire.child("markers").child(id).child("date").setValue(date);
         mFire.child("markers").child(id).child("title").setValue(title);
         mFire.child("markers").child(id).child("description").setValue(description);
+        mFire.child("markers").child(id).child("category").setValue(category);
         mFire.child("images").child(id).setValue(image);
         //mFire.child("markers").child(id).child("image").setValue(image);
         mFire.child("markers").child(id).child("latitude").setValue(location.latitude);

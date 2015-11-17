@@ -32,4 +32,12 @@
     <string name="tipoDenuncia1">tipoDenuncia1</string>
     <string name="tipoDenuncia2">tipoDenuncia2</string>
     <string name="tipoDenuncia3">tipoDenuncia3</string>
+
+    <string name="posts_type_selector_prompt">Elija una categoría</string>
+    <string-array name="posts_categories">
+        <item>Robo de autos</item>
+        <item>Transporte público</item>
+        <item>Mascotas perdidas</item>
+        <item>Otros</item>
+    </string-array>
 </resources>
