@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
@@ -45,6 +46,7 @@ public class Formulario extends AppCompatActivity {
     public Bitmap takenImage;
     public EditText titulo;
     public EditText descripcion;
+    public Spinner categoria;
     private Firebase mFire;
     ImageView ivPreview;
 
@@ -63,8 +65,9 @@ public class Formulario extends AppCompatActivity {
 
         Button publicar =  (Button) findViewById(R.id.buttonPublicar);
         Button meme =  (Button) findViewById(R.id.buttonMeme);
-       titulo =  (EditText) findViewById(R.id.editText2);
-       descripcion =  (EditText) findViewById(R.id.editText3);
+        titulo =  (EditText) findViewById(R.id.editText2);
+        descripcion =  (EditText) findViewById(R.id.editText3);
+        categoria = (Spinner) findViewById(R.id.spinnerPostsType);
 
         publicar.setOnClickListener(new View.OnClickListener() {
 
@@ -82,6 +85,7 @@ public class Formulario extends AppCompatActivity {
                         returnIntent.putExtra("titulo", String.valueOf(titulo.getText()));
                         returnIntent.putExtra("descripcion", String.valueOf(descripcion.getText()));
                         returnIntent.putExtra("img", photoFileName);
+                        returnIntent.putExtra("categoria", String.valueOf(categoria.getSelectedItem().toString()));
                         setResult(Activity.RESULT_OK, returnIntent);
                         finish();
                     }
