@@ -21,16 +21,29 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.firebase.client.AuthData;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -39,8 +52,11 @@ import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.facebook.FacebookSdk;
 import static android.Manifest.permission.READ_CONTACTS;
+import static android.Manifest.permission.SYSTEM_ALERT_WINDOW;
 
 /**
  * A login screen that offers login via email/password.
@@ -72,10 +88,28 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private ValueEventListener authEventListener = null;
 
+    private LoginButton fbLogin;
+
+    private Context context = null;
+
+    /*####################################################################################*/
+    /* Data from the authenticated user */
+    private AuthData mAuthData;
+    /* Listener for Firebase session changes */
+    private Firebase.AuthStateListener mAuthStateListener;
+    /* The callback manager for Facebook */
+    private CallbackManager mFacebookCallbackManager;
+    /* Used to track user logging in/out off Facebook */
+    private AccessTokenTracker mFacebookAccessTokenTracker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
+
+        context = this;
 
         Firebase.setAndroidContext(this);
         mRef = new Firebase("https://sizzling-heat-8397.firebaseio.com");
@@ -113,9 +147,59 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        /* ##########################################################################################################################################################
+        ######################################################################################
+        ######################################################################################
+        ######################################################################################
+         */
+        /* Seteamos el boton para login con facebook */
+        fbLogin = (LoginButton) findViewById(R.id.facebook_sign_in_button);
+        mFacebookCallbackManager = CallbackManager.Factory.create();
+        fbLogin.setReadPermissions("public_profile");
+        /*
+        if(AccessToken.getCurrentAccessToken() != null){
+            LoginManager.getInstance().logOut();
+        }*/
+
+        fbLogin.registerCallback(mFacebookCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                onFacebookAccessTokenChange(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() { }
+
+            @Override
+            public void onError(FacebookException error) { }
+        });
     }
+
+    private void onFacebookAccessTokenChange(AccessToken token) {
+
+        if (token != null) {
+            mRef.authWithOAuthToken("facebook", token.getToken(), new Firebase.AuthResultHandler() {
+                @Override
+                public void onAuthenticated(AuthData authData) {
+                    mRef.child("users").child(authData.getUid()).child("name").setValue(authData.getProviderData().get("displayName"));
+                }
+                @Override
+                public void onAuthenticationError(FirebaseError firebaseError) { }
+            });
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+    /*############################################################################################################################################################# */
 
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
@@ -343,7 +427,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
             final boolean[] output = new boolean[]{false};
-
             mRef.authWithPassword(mEmail, mPassword, new Firebase.AuthResultHandler() {
                 @Override
                 public void onAuthenticated(AuthData authData) {

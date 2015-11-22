@@ -65,7 +65,7 @@
                 android:id="@+id/email_sign_in_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="10dp"
                 android:text="Iniciar sesión"
                 android:textStyle="bold" />
 
@@ -73,9 +73,18 @@
                 android:id="@+id/email_sign_up_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="10dp"
                 android:text="Registrate"
                 android:textStyle="bold" />
+
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/facebook_sign_in_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingBottom="12dp"
+                android:paddingTop="12dp"
+                android:textAllCaps="true" />
 
         </LinearLayout>
     </ScrollView>
