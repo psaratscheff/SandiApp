@@ -39,6 +39,8 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
@@ -92,7 +94,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private HashMap<Marker,String> currentMarkers = new HashMap<Marker,String>();
 
     private Fragment myPostsFragment = null;
-    private MenuItem[] categoriesMenuItems = null;
+    private MenuItem[] categoriesMenuItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +123,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Logs 'install' and 'app activate' App Events.
+        AppEventsLogger.activateApp(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Logs 'app deactivate' App Event.
+        AppEventsLogger.deactivateApp(this);
     }
 
     @Override
@@ -154,7 +172,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.nav_drawer, menu);
-
+        menuCategory = menu;
         navUsername = (TextView) findViewById(R.id.navUsername);
         navUsername.setText(LoginActivity.userName);
         navEmail = (TextView) findViewById(R.id.navEmail);
@@ -272,7 +290,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         } else if (id == R.id.nav_logout) {
             mFire.unauth();
-            startActivity(new Intent(MapsActivity.this, LoginActivity.class));
+            LoginManager.getInstance().logOut();
+            //startActivity(new Intent(MapsActivity.this, LoginActivity.class));
         }
 
         drawer.closeDrawer(GravityCompat.START);
@@ -564,15 +583,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
 
                         if(child.child("category").exists()){
-                            String category = child.child("category").getValue().toString();
-                            boolean isCategorySelected = false;
-                            for(int i=0; i<categoriesMenuItems.length; i++){
-                                if(categoriesMenuItems[i].isChecked() && (categoriesMenuItems[i].getTitle().equals("Todos")
-                                        || categoriesMenuItems[i].getTitle().equals(category))){
-                                    shouldCreateMark[3] = true;
-                                    break;
+
+                            /* TODO arreglar esto! Si se hace login con facebook, luego logout y
+                            despues login de nuevo, entonces aparece un error y no se pueden cargar
+                            los pins.
+                             */
+                            try{
+                                String category = child.child("category").getValue().toString();
+                                boolean isCategorySelected = false;
+                                for(int i=0; i<categoriesMenuItems.length; i++){
+                                    if(categoriesMenuItems[i].isChecked() && (categoriesMenuItems[i].getTitle().equals("Todos")
+                                            || categoriesMenuItems[i].getTitle().equals(category))){
+                                        shouldCreateMark[3] = true;
+                                        break;
+                                    }
                                 }
-                            }
+                            }catch (NullPointerException e){}
                         }
 
                         boolean create = true;

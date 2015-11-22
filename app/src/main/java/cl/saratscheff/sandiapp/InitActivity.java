@@ -24,6 +24,16 @@ public class InitActivity extends AppCompatActivity {
         Firebase.setAndroidContext(this);
         mRef = new Firebase("https://sizzling-heat-8397.firebaseio.com");
 
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                //
+            }
+        };
+
+        // Simulate a long loading process on application startup.
+        Timer timer = new Timer();
+        timer.schedule(task, 3000);
 
         /* Si el usuario ya se ha registrado en el telefono, entonces se inicia sesion automaticamente */
         mRef.addAuthStateListener(new Firebase.AuthStateListener() {
@@ -36,8 +46,11 @@ public class InitActivity extends AppCompatActivity {
                     mRef.child("users").child(LoginActivity.userID).child("name").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            LoginActivity.userName = dataSnapshot.getValue().toString();
-                            startActivity(new Intent(InitActivity.this, MapsActivity.class));
+                            if(dataSnapshot.exists() && dataSnapshot.getValue() != null){
+                                LoginActivity.userName = dataSnapshot.getValue().toString();
+                                startActivity(new Intent(InitActivity.this, MapsActivity.class));
+                            }
+
                         }
 
                         @Override
@@ -48,16 +61,7 @@ public class InitActivity extends AppCompatActivity {
                 }
 
                 else {
-                    TimerTask task = new TimerTask() {
-                        @Override
-                        public void run() {
-                            startActivity(new Intent(InitActivity.this, LoginActivity.class));
-                        }
-                    };
-
-                    // Simulate a long loading process on application startup.
-                    Timer timer = new Timer();
-                    timer.schedule(task, 3000);
+                    startActivity(new Intent(InitActivity.this, LoginActivity.class));
                 }
             }
         });

@@ -13,6 +13,10 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="facebook_app_id">1501534310176214</string>
+    <string name="login_text">Hey</string>
+    <string name="com_facebook_loginview_log_in_button">Connect</string>
+    <string name="com_facebook_loginview_log_out_button">Your Logout</string>
 
     <!-- Strings related to ComplaintActivity -->
     <string name="complaint_title">Titulo de la publicacion</string>
