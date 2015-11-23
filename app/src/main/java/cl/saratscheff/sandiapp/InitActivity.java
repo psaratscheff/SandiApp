@@ -41,7 +41,9 @@ public class InitActivity extends AppCompatActivity {
             public void onAuthStateChanged(AuthData authData) {
                 if (authData != null) {
                     LoginActivity.userID = mRef.getAuth().getUid();
-                    LoginActivity.userEmail = mRef.getAuth().getProviderData().get("email").toString();
+                    try{
+                        LoginActivity.userEmail = mRef.getAuth().getProviderData().get("email").toString();
+                    }catch (NullPointerException e){}
 
                     mRef.child("users").child(LoginActivity.userID).child("name").addValueEventListener(new ValueEventListener() {
                         @Override
