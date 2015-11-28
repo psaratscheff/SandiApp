@@ -6,18 +6,24 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Base64;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.facebook.share.model.SharePhoto;
+import com.facebook.share.model.SharePhotoContent;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -25,7 +31,10 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ServerValue;
 import com.firebase.client.ValueEventListener;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +54,8 @@ public class ComplaintActivity extends AppCompatActivity {
     private ProgressDialog pgDialog;
     private Boolean loadingHDimage;
 
+    private ShareActionProvider mShareActionProvider;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +68,6 @@ public class ComplaintActivity extends AppCompatActivity {
         Intent intent = getIntent();
         markerID = intent.getStringExtra("markerID");
         title = intent.getStringExtra("title");
-
         this.setTitle(title); // Seteo el title del activity como el del complaint.
 
         Firebase.setAndroidContext(this);
@@ -159,21 +169,48 @@ public class ComplaintActivity extends AppCompatActivity {
                 // nada
             }
         });
-        /*
-        nRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                Long timestamp = (Long) snapshot.getValue();
-                System.out.println(timestamp);
-            }
+    }
 
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
+    @Override
+    public void onResume(){
 
-            }
-        });
+        super.onResume();
+    }
 
-        nRef.setValue(ServerValue.TIMESTAMP);*/
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.chat_menu, menu);
+        // Locate MenuItem with ShareActionProvider
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+
+        // Fetch and store ShareActionProvider
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "SandiApp - " + title);
+        sendIntent.setType("text/plain");
+
+
+        mShareActionProvider.setShareIntent(sendIntent);
+        //startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.facebook_app_id)));
+
+
+        // Return true to display menu
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Call to update the share intent
+    private void setShareIntent(Intent shareIntent) {
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(shareIntent);
+        }
     }
 
     @Override

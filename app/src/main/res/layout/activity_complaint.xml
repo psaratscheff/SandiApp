@@ -46,7 +46,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:onClick="sendMessage"
-            android:tint="@color/colorAccent"
+            android:tint="@color/colorPrimary"
             android:layout_alignTop="@+id/editTextMessage" />
     </RelativeLayout>
 
