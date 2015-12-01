@@ -112,6 +112,7 @@ public class PopUpMapMenu extends DialogFragment {
                 Intent myIntent = new Intent(v.getContext(), ComplaintActivity.class);
                 myIntent.putExtra("markerID", markerID); // No puedo pasar la imagen por su tamaño!!
                 myIntent.putExtra("title", title); // Paso el titulo para colocar en el "Header"
+                myIntent.putExtra("description", description);
                 PopUpMapMenu.this.startActivity(myIntent);
             }
         });
@@ -122,6 +123,7 @@ public class PopUpMapMenu extends DialogFragment {
                 Intent myIntent = new Intent(v.getContext(), ComplaintActivity.class);
                 myIntent.putExtra("markerID", markerID); // No puedo pasar la imagen por su tamaño!!
                 myIntent.putExtra("title", title); // Paso el titulo para colocar en el "Header"
+                myIntent.putExtra("description", description);
                 PopUpMapMenu.this.startActivity(myIntent);
             }
         });

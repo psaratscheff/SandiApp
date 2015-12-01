@@ -23,6 +23,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.SharePhotoContent;
@@ -49,10 +51,12 @@ public class ComplaintActivity extends AppCompatActivity {
     private Firebase messagesRef;
 
     private String title;
+    private String description;
     private String markerID;
     private String userName;
     private Bitmap image;
     private Bitmap HDimage;
+    private TextView complaintDescription;
 
     private Dialog hdImageDialog;
     private ProgressDialog pgDialog;
@@ -68,11 +72,16 @@ public class ComplaintActivity extends AppCompatActivity {
         listViewDiscussion = (ListView)findViewById(R.id.listViewDiscussion);
         listViewDiscussion.setAdapter(new MessageRowAdapter(this));
 
+        complaintDescription = (TextView) findViewById(R.id.complaint_description);
+
         userName = LoginActivity.userName;
         Intent intent = getIntent();
         markerID = intent.getStringExtra("markerID");
         title = intent.getStringExtra("title");
+        description = intent.getStringExtra("description");
+
         this.setTitle(title); // Seteo el title del activity como el del complaint.
+        complaintDescription.setText(description);
 
         Firebase.setAndroidContext(this);
         nRef = new Firebase("https://sizzling-heat-8397.firebaseio.com/");
