@@ -38,6 +38,7 @@
     <string name="tipoDenuncia3">tipoDenuncia3</string>
 
     <string name="posts_type_selector_prompt">Elija una categoría</string>
+    <string name="title_activity_chart">Estadísticas</string>
     <string-array name="posts_categories">
         <item>Robo de autos</item>
         <item>Transporte público</item>

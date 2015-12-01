@@ -94,6 +94,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private HashMap<Marker,String> currentMarkers = new HashMap<Marker,String>();
 
     private Fragment myPostsFragment = null;
+    private Fragment myChartFragment = null;
     private MenuItem[] categoriesMenuItems;
 
     @Override
@@ -290,10 +291,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         } else if (id == R.id.nav_charts) {
 
-            // Implementar como fragmento?
+            myChartFragment = new ChartFragment().setContext(context);
 
-            Intent chartIntent = new Intent(MapsActivity.this, ChartActivity.class);
-            MapsActivity.this.startActivity(chartIntent);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+            // Replace whatever is in the fragment_container view with this fragment,
+            // and add the transaction to the back stack if needed
+            transaction.replace(R.id.map, myChartFragment);
+            transaction.addToBackStack(null);
+
+            // Commit the transaction
+            transaction.commit();
+            setTitle(R.string.title_activity_chart);
+
+            // IMPLEMENTACIÓN VIEJA (Activity Completo)
+            /*Intent chartIntent = new Intent(MapsActivity.this, ChartActivity.class);
+            MapsActivity.this.startActivity(chartIntent);*/
 
         } else if (id == R.id.nav_logout) {
 

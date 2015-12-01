@@ -1,8 +1,14 @@
 package cl.saratscheff.sandiapp;
 
+import android.content.Context;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -25,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-public class ChartActivity extends AppCompatActivity implements OnChartValueSelectedListener {
+public class ChartFragment extends Fragment implements OnChartValueSelectedListener {
 
     private PieChart pieChart;
     private String centerText;
@@ -39,16 +45,21 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
     private PieDataSet pieDataSet3;
     private PieDataSet pieDataSet4;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chart);
+    private FragmentActivity faActivity;
+    private LinearLayout llLayout;
+    private Context context;
 
-        pieChart = (PieChart) findViewById(R.id.pie_chart);
-        RadioButton rb1 = (RadioButton) findViewById(R.id.radio1);
-        RadioButton rb2 = (RadioButton) findViewById(R.id.radio2);
-        RadioButton rb3 = (RadioButton) findViewById(R.id.radio3);
-        RadioButton rb4 = (RadioButton) findViewById(R.id.radio4);
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        faActivity = (FragmentActivity) super.getActivity();
+        llLayout = (LinearLayout) inflater.inflate(R.layout.activity_chart, container, false);
+
+        pieChart = (PieChart) llLayout.findViewById(R.id.pie_chart);
+        RadioButton rb1 = (RadioButton) llLayout.findViewById(R.id.radio1);
+        RadioButton rb2 = (RadioButton) llLayout.findViewById(R.id.radio2);
+        RadioButton rb3 = (RadioButton) llLayout.findViewById(R.id.radio3);
+        RadioButton rb4 = (RadioButton) llLayout.findViewById(R.id.radio4);
 
         // Datos de ejemplo
 
@@ -119,6 +130,8 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
         pieChart.invalidate();
 
         pieChart.setOnChartValueSelectedListener(this);
+
+        return llLayout;
     }
 
     @Override
@@ -133,7 +146,7 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
     }
 
     @Override
-     public void onNothingSelected() {
+    public void onNothingSelected() {
         pieChart.setCenterText(centerText);
     }
 
@@ -191,5 +204,10 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
                     break;
                 }
         }
+    }
+
+    public ChartFragment setContext(Context cont){
+        this.context = cont;
+        return this;
     }
 }
