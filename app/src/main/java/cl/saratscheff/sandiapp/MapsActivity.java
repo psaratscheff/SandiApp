@@ -588,17 +588,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                                 Geocoder geo = new Geocoder(context, Locale.getDefault());
                                 List<Address> addresses = geo.getFromLocation(loc.latitude, loc.longitude, 1);
-                                if (addresses.isEmpty()) {
-
-                                }
-                                else {
-                                    if (addresses.size() > 0) {
-
-                                        //toast incesesario
-                                        Toast.makeText(getApplicationContext(), "Comuna: " + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
-                                        System.out.println("Comuna: " + addresses.get(0).getLocality()); //codigo: addresses.get(0).getFeatureName(), Region: addresses.get(0).getAdminArea()
-                                    }
-                                }
                             }
                             catch (Exception e) {
                                 e.printStackTrace(); // getFromLocation() may sometimes fail
