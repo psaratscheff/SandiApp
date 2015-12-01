@@ -2,6 +2,8 @@ package cl.saratscheff.sandiapp;
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.media.ExifInterface;
@@ -64,6 +66,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -567,8 +571,33 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         LatLng loc = null;
                         if(child.child("latitude").exists() && child.child("longitude").exists()){
+
+
                             loc = new LatLng(Double.parseDouble(child.child("latitude").getValue().toString()),
                                     Double.parseDouble(child.child("longitude").getValue().toString()));
+
+
+                            try {
+
+                                Geocoder geo = new Geocoder(context, Locale.getDefault());
+                                List<Address> addresses = geo.getFromLocation(loc.latitude, loc.longitude, 1);
+                                if (addresses.isEmpty()) {
+
+                                }
+                                else {
+                                    if (addresses.size() > 0) {
+
+                                        //toast incesesario
+                                        Toast.makeText(getApplicationContext(), "Comuna: " + addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
+                                        System.out.println("Comuna: " + addresses.get(0).getLocality()); //codigo: addresses.get(0).getFeatureName(), Region: addresses.get(0).getAdminArea()
+                                    }
+                                }
+                            }
+                            catch (Exception e) {
+                                e.printStackTrace(); // getFromLocation() may sometimes fail
+                            }
+
+
                             shouldCreateMark[0] = true;
                         }
 

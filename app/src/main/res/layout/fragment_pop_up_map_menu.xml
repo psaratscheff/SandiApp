@@ -15,12 +15,16 @@
         android:id="@+id/lbl_description"
         android:text="Breve descripcion del post"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="10dp" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Ver post"
-        android:id="@+id/btn_view_post" />
+        android:id="@+id/btn_view_post"
+        android:background="#4CAF50"
+        android:layout_margin="5dp" />
 
 </LinearLayout>
