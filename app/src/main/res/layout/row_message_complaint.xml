@@ -3,19 +3,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    <RelativeLayout
-        android:layout_width="fill_parent"
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
+        android:layout_marginTop="2dp">
+
+        <TextView
+            android:id="@+id/textViewMessage"
+            android:paddingLeft="5dp"
+            android:textColor="#000"
+            android:textSize="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Contenido del mensaje"
+            android:layout_margin="1dp" />
+
         <TextView
             android:id="@+id/textViewSender"
             android:paddingLeft="2dp"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:textStyle="bold"
-            android:textColor="#0000FF"
+            android:textColor="#159f06"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Autor" />
+            android:text="Autor"
+            android:layout_margin="0dp"
+            android:layout_gravity="right" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -25,16 +43,16 @@
             android:id="@+id/textViewDate"
             android:layout_alignParentRight="true"
             android:layout_marginRight="10dp"
-            android:layout_centerVertical="true"/>
-    </RelativeLayout>
+            android:layout_centerVertical="true"
+            android:layout_gravity="right" />
 
-    <TextView
-        android:id="@+id/textViewMessage"
-        android:paddingLeft="5dp"
-        android:textColor="#000"
-        android:textSize="17dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Contenido del mensaje" />
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="right">
+
+        </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

@@ -123,6 +123,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        mFire = new Firebase("https://sizzling-heat-8397.firebaseio.com");
+        mFire.setAndroidContext(this);
     }
 
     @Override
@@ -388,7 +391,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
             }
         });
-        mFire = new Firebase("https://sizzling-heat-8397.firebaseio.com");
+
         //mGeo = new GeoFire(mFire.child("markers"));
 
         loadPins();
@@ -598,7 +601,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                         break;
                                     }
                                 }
-                            }catch (NullPointerException e){}
+                            }catch (NullPointerException e){
+                                //Si hay problema con los listeners (dobles) de los pins es aca.
+                                mMap.clear();
+                                loadPins();
+
+                            }
                         }
 
                         boolean create = true;

@@ -10,54 +10,87 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:gravity="center" >
-        <ImageButton
-            android:id="@+id/imageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="150dp"
-            android:background="@drawable/dead_watermelon"
-            android:clickable="true"
-            android:scaleType="centerCrop"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true">
+
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="250dp"
+                android:layout_height="130dp"
+                android:background="@drawable/dead_watermelon"
+                android:clickable="true"
+                android:scaleType="centerCrop"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Descripcion"
+                android:id="@+id/textView6"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="20dp"
+                android:layout_gravity="center_horizontal" />
+
+            <ListView
+                android:id="@+id/listViewDiscussion"
+                android:layout_width="fill_parent"
+                android:layout_height="240dp"
+                android:dividerHeight="0.1dp"
+                android:divider="#0000CC"
+                android:layout_below="@id/header"
+
+                android:layout_margin="10dp"
+                android:layout_marginTop="0dp">
+            </ListView>
+
+            <RelativeLayout
+                android:id="@+id/footer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:gravity="center"
+                android:orientation="horizontal">
+                <EditText
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/editTextMessage"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_toLeftOf="@+id/buttonSend"
+                    android:layout_toStartOf="@+id/buttonSend" />
+
+                <ImageView
+                    android:src="@drawable/ic_send_black_24dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxHeight="20dp"
+                    android:id="@+id/buttonSend"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:onClick="sendMessage"
+                    android:tint="@color/colorPrimary"
+                    android:layout_alignTop="@+id/editTextMessage" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
     </RelativeLayout>
 
     <!-- Footer aligned to bottom -->
-    <RelativeLayout
-        android:id="@+id/footer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center"
-        android:orientation="horizontal">
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/editTextMessage"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_toLeftOf="@+id/buttonSend"
-            android:layout_toStartOf="@+id/buttonSend" />
 
-        <ImageView
-            android:src="@drawable/ic_send_black_24dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxHeight="20dp"
-            android:id="@+id/buttonSend"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:onClick="sendMessage"
-            android:tint="@color/colorPrimary"
-            android:layout_alignTop="@+id/editTextMessage" />
-    </RelativeLayout>
 
-    <ListView
-        android:id="@+id/listViewDiscussion"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:dividerHeight="0.1dp"
-        android:divider="#0000CC"
-        android:layout_below="@id/header"
-        android:layout_above="@id/footer"
-        >
-    </ListView>
 </RelativeLayout>

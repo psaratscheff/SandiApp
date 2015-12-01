@@ -92,8 +92,13 @@
                 android:layout_weight="0.26"
                 android:gravity="bottom" />
 
-            <Spinner
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"></LinearLayout>
+
+            <Spinner
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/spinnerPostsType"
                 android:layout_gravity="center_horizontal"
