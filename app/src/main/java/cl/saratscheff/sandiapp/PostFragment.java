@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -365,6 +366,7 @@ class PostsAdapter extends BaseAdapter{
             vi = inflater.inflate(R.layout.row_mypost, parent, false);
         TextView textViewTitle = (TextView) vi.findViewById(R.id.textViewPostTitle);
         TextView textViewDate = (TextView) vi.findViewById(R.id.textViewPostDate);
+        ImageView roundImage = (ImageView) vi.findViewById(R.id.post_round_image);
 
         if(position<data.size()){
             textViewTitle.setText(data.get(position).title);

@@ -6,14 +6,8 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_main"
-    tools:context=".MainActivity"><![CDATA[
+    tools:context=".MainActivity">
 
-    TextView android:text="Camara App" android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:id="@+id/textView" />
-
-
-    ]]>
 
     <ScrollView
         android:layout_width="fill_parent"

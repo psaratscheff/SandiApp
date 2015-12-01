@@ -40,7 +40,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="Descripcion"
                 android:id="@+id/complaint_description"
                 android:layout_marginLeft="10dp"
@@ -89,7 +89,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
                     android:onClick="sendMessage"
-                    android:tint="@color/colorPrimary"
+                    android:tint="#b9b9b9"
                     android:layout_alignTop="@+id/editTextMessage" />
             </RelativeLayout>
 
