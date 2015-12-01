@@ -4,6 +4,7 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -13,8 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.DialogFragment;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,7 +31,7 @@ import java.io.IOException;
 
 
 public class PopUpMapMenu extends DialogFragment {
-    private TextView mDescription = null;
+    //private TextView mDescription = null;
     private Button mBtnPost;
     private ImageView mImgPost = null;
     private String markerID = "";
@@ -36,15 +40,17 @@ public class PopUpMapMenu extends DialogFragment {
     private String date = "";
     private String creator = "";
     private String image = "";
+    private FrameLayout previewLayout = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pop_up_map_menu, container);
         mBtnPost = (Button) view.findViewById(R.id.btn_view_post);
-        mDescription = (TextView) view.findViewById(R.id.lbl_description);
+        //mDescription = (TextView) view.findViewById(R.id.lbl_description);
         mImgPost = (ImageView) view.findViewById(R.id.image_post);
-
+        previewLayout = (FrameLayout) view.findViewById(R.id.popup_preview_layout);
+        //view.setBackgroundColor(Color.LTGRAY);
         File mediaStorageDir = new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "SandiApp/");
 
@@ -61,10 +67,13 @@ public class PopUpMapMenu extends DialogFragment {
         if (bitmap != null)
         {
             mImgPost.setImageBitmap(bitmap);
+            updatePopUpView();
         }else {
 
-            if (image != "" | markerID != "")
+            if (image != "" | markerID != "") {
                 setImage(image, markerID);
+                updatePopUpView();
+            }
 
         }
 
@@ -116,8 +125,9 @@ public class PopUpMapMenu extends DialogFragment {
                 PopUpMapMenu.this.startActivity(myIntent);
             }
         });
-        getDialog().setTitle(title);
+        //getDialog().setTitle(title);
 
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         return view;
     }
 
@@ -134,17 +144,17 @@ public class PopUpMapMenu extends DialogFragment {
 
     public void setDescription(String Description){
         this.description = Description;
-        updateDescription();
+        //updateDescription();
     }
 
     public void setDate(String Date){
         this.date = Date;
-        updateDescription();
+        //updateDescription();
     }
 
     public void setCreator(String Creator) {
         this.creator = Creator;
-        updateDescription();
+        //updateDescription();
     }
 
     public void setImage(String Image, String markerID) {
@@ -157,10 +167,11 @@ public class PopUpMapMenu extends DialogFragment {
             Bitmap bitmap = BitmapFactory.decodeFile(path);
             if (bitmap != null) {
                 mImgPost.setImageBitmap(bitmap);
+                updatePopUpView();
             } else {
-
                 Bitmap img = decode(image);
                 mImgPost.setImageBitmap(img);
+                updatePopUpView();
 
                 FileOutputStream out = null;
                 String strMyImagePath = mediaStorageDir.getAbsolutePath();
@@ -193,9 +204,21 @@ public class PopUpMapMenu extends DialogFragment {
         }
     }
 
+    private void updatePopUpView(){
+        mImgPost.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT));
+        mBtnPost.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+        previewLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                700));
+
+    }
+    /*
     private void updateDescription(){
         if(mDescription != null){
-            mDescription.setText(date + " por " + creator + "\n\n" + description);
+            //mDescription.setText(date + " por " + creator + "\n\n" + description);
+            mDescription.setText(creator);
         }
     }
+    */
 }
