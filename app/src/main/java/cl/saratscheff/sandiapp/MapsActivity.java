@@ -471,6 +471,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 editNameDialog.setTitle(marker.getTitle());
                 editNameDialog.setDescription(marker.getSnippet());
 
+
                 mFire.child("markers").child(markerID).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snap) {

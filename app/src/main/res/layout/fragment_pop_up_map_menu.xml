@@ -5,22 +5,43 @@
     android:layout_gravity="center"
     android:orientation="vertical"  >
 
-    <ImageView
-        android:layout_width="fill_parent"
-        android:layout_height="250dp"
-        android:id="@+id/image_post"
-        android:src="@android:drawable/ic_menu_camera" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/popup_preview_layout">
 
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:id="@+id/image_post"
+            android:src="@drawable/sandiapp_logo_grey"
+            android:layout_gravity="center"
+            android:minWidth="300dp"
+            android:layout_marginBottom="2dp" />
+
+    </FrameLayout>
+
+    <!--
     <TextView
         android:id="@+id/lbl_description"
         android:text="Breve descripcion del post"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textColor="@color/colorPrimary"
+        style="?android:attr/borderlessButtonStyle" />
+        -->
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
         android:text="Ver post"
-        android:id="@+id/btn_view_post" />
+        android:id="@+id/btn_view_post"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/alternative"
+        android:maxWidth="300dp"
+        android:textAllCaps="true" />
 
 </LinearLayout>
