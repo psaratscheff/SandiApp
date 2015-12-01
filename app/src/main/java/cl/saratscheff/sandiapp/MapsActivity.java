@@ -288,8 +288,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             transaction.commit();
             setTitle(R.string.title_activity_myposts);
 
+        } else if (id == R.id.nav_charts) {
+
+            // Implementar como fragmento?
+
+            Intent chartIntent = new Intent(MapsActivity.this, ChartActivity.class);
+            MapsActivity.this.startActivity(chartIntent);
+
         } else if (id == R.id.nav_logout) {
-            mFire.unauth();
+
             LoginManager.getInstance().logOut();
             //startActivity(new Intent(MapsActivity.this, LoginActivity.class));
         }
