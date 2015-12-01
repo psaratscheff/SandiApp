@@ -123,73 +123,14 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
 
     @Override
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
-
         if (e == null) {
-            System.out.println("NULL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             return;
         }
-        System.out.println("Entry: " + e.toString() + "|| dataSetIndex: " + dataSetIndex + "|| HIghlight: " + h);
         pieChart.setCenterText(xValsSelected.get(e.getXIndex()) + "\n" + "Casos: " + Math.round(e.getVal()));
     }
 
     @Override
      public void onNothingSelected() {
         pieChart.setCenterText(centerText);
-    }
-
-    public void onRadioButtonClicked(View view) {
-        RadioButton rb = (RadioButton) view;
-
-        boolean checked = rb.isChecked();
-        switch(rb.getId()) {
-            case R.id.radio1:
-                if (checked) {
-                    PieData data = new PieData(xVals1, pieDataSet1); xValsSelected=xVals1;
-                    data.setValueTextSize(12f);
-                    data.setValueFormatter(new PercentFormatter());
-                    pieChart.setData(data);
-                    centerText = "Seleccione comuna \n para ver N° de casos";
-                    pieChart.setCenterText(centerText);
-                    pieChart.animateY(300, Easing.EasingOption.EaseInOutQuad);
-                    pieChart.highlightValue(-1, -1); // Deseleccionar items
-                    break;
-                }
-            case R.id.radio2:
-                if (checked) {
-                    PieData data = new PieData(xVals2, pieDataSet2); xValsSelected=xVals2;
-                    data.setValueTextSize(12f);
-                    data.setValueFormatter(new PercentFormatter());
-                    pieChart.setData(data);
-                    centerText = "Seleccione Categoría \n para ver N° de casos";
-                    pieChart.setCenterText(centerText);
-                    pieChart.animateY(300, Easing.EasingOption.EaseInOutQuad);
-                    pieChart.highlightValue(-1, -1); // Deseleccionar items
-                    break;
-                }
-            case R.id.radio3:
-                if (checked) {
-                    PieData data = new PieData(xVals3, pieDataSet3); xValsSelected=xVals3;
-                    data.setValueTextSize(12f);
-                    data.setValueFormatter(new PercentFormatter());
-                    pieChart.setData(data);
-                    centerText = "Seleccione Año \n para ver N° de casos";
-                    pieChart.setCenterText(centerText);
-                    pieChart.animateY(300, Easing.EasingOption.EaseInOutQuad);
-                    pieChart.highlightValue(-1, -1); // Deseleccionar items
-                    break;
-                }
-            case R.id.radio4:
-                if (checked) {
-                    PieData data = new PieData(xVals4, pieDataSet4); xValsSelected=xVals4;
-                    data.setValueTextSize(12f);
-                    data.setValueFormatter(new PercentFormatter());
-                    pieChart.setData(data);
-                    centerText = "Seleccione Mes \n para ver N° de casos";
-                    pieChart.setCenterText(centerText);
-                    pieChart.animateY(300, Easing.EasingOption.EaseInOutQuad);
-                    pieChart.highlightValue(-1, -1); // Deseleccionar items
-                    break;
-                }
-        }
     }
 }

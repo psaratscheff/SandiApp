@@ -30,26 +30,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:text="Comunas"
-            android:onClick="onRadioButtonClicked"/>
+            android:text="Comunas"/>
         <RadioButton
             android:id="@+id/radio2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Categoría"
-            android:onClick="onRadioButtonClicked"/>
+            android:text="Categoría"/>
         <RadioButton
             android:id="@+id/radio3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Año"
-            android:onClick="onRadioButtonClicked"/>
+            android:text="Año"/>
         <RadioButton
             android:id="@+id/radio4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mes"
-            android:onClick="onRadioButtonClicked"/>
+            android:text="Mes"/>
     </RadioGroup>
 
     <com.github.mikephil.charting.charts.PieChart

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
@@ -60,6 +61,65 @@ public class ChartFragment extends Fragment implements OnChartValueSelectedListe
         RadioButton rb2 = (RadioButton) llLayout.findViewById(R.id.radio2);
         RadioButton rb3 = (RadioButton) llLayout.findViewById(R.id.radio3);
         RadioButton rb4 = (RadioButton) llLayout.findViewById(R.id.radio4);
+
+        RadioGroup radioGroup = (RadioGroup) llLayout.findViewById(R.id.radioGroup);
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // checkedId is the RadioButton selected
+
+                switch(checkedId) {
+                    case R.id.radio1: {
+                        PieData data = new PieData(xVals1, pieDataSet1);
+                        xValsSelected = xVals1;
+                        data.setValueTextSize(12f);
+                        data.setValueFormatter(new PercentFormatter());
+                        pieChart.setData(data);
+                        centerText = "Seleccione comuna \n para ver N° de casos";
+                        pieChart.setCenterText(centerText);
+                        pieChart.animateY(300, Easing.EasingOption.EaseInOutQuad);
+                        pieChart.highlightValue(-1, -1); // Deseleccionar items
+                        break;
+                    }
+                    case R.id.radio2: {
+                        PieData data = new PieData(xVals2, pieDataSet2);
+                        xValsSelected = xVals2;
+                        data.setValueTextSize(12f);
+                        data.setValueFormatter(new PercentFormatter());
+                        pieChart.setData(data);
+                        centerText = "Seleccione Categoría \n para ver N° de casos";
+                        pieChart.setCenterText(centerText);
+                        pieChart.animateY(300, Easing.EasingOption.EaseInOutQuad);
+                        pieChart.highlightValue(-1, -1); // Deseleccionar items
+                        break;
+                    }
+                    case R.id.radio3: {
+                        PieData data = new PieData(xVals3, pieDataSet3);
+                        xValsSelected = xVals3;
+                        data.setValueTextSize(12f);
+                        data.setValueFormatter(new PercentFormatter());
+                        pieChart.setData(data);
+                        centerText = "Seleccione Año \n para ver N° de casos";
+                        pieChart.setCenterText(centerText);
+                        pieChart.animateY(300, Easing.EasingOption.EaseInOutQuad);
+                        pieChart.highlightValue(-1, -1); // Deseleccionar items
+                        break;
+                    }
+                    case R.id.radio4: {
+                        PieData data = new PieData(xVals4, pieDataSet4);
+                        xValsSelected = xVals4;
+                        data.setValueTextSize(12f);
+                        data.setValueFormatter(new PercentFormatter());
+                        pieChart.setData(data);
+                        centerText = "Seleccione Mes \n para ver N° de casos";
+                        pieChart.setCenterText(centerText);
+                        pieChart.animateY(300, Easing.EasingOption.EaseInOutQuad);
+                        pieChart.highlightValue(-1, -1); // Deseleccionar items
+                        break;
+                    }
+                }
+            }
+        });
 
         // Datos de ejemplo
 
@@ -136,74 +196,15 @@ public class ChartFragment extends Fragment implements OnChartValueSelectedListe
 
     @Override
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
-
         if (e == null) {
-            System.out.println("NULL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             return;
         }
-        System.out.println("Entry: " + e.toString() + "|| dataSetIndex: " + dataSetIndex + "|| HIghlight: " + h);
         pieChart.setCenterText(xValsSelected.get(e.getXIndex()) + "\n" + "Casos: " + Math.round(e.getVal()));
     }
 
     @Override
     public void onNothingSelected() {
         pieChart.setCenterText(centerText);
-    }
-
-    public void onRadioButtonClicked(View view) {
-        RadioButton rb = (RadioButton) view;
-
-        boolean checked = rb.isChecked();
-        switch(rb.getId()) {
-            case R.id.radio1:
-                if (checked) {
-                    PieData data = new PieData(xVals1, pieDataSet1); xValsSelected=xVals1;
-                    data.setValueTextSize(12f);
-                    data.setValueFormatter(new PercentFormatter());
-                    pieChart.setData(data);
-                    centerText = "Seleccione comuna \n para ver N° de casos";
-                    pieChart.setCenterText(centerText);
-                    pieChart.animateY(300, Easing.EasingOption.EaseInOutQuad);
-                    pieChart.highlightValue(-1, -1); // Deseleccionar items
-                    break;
-                }
-            case R.id.radio2:
-                if (checked) {
-                    PieData data = new PieData(xVals2, pieDataSet2); xValsSelected=xVals2;
-                    data.setValueTextSize(12f);
-                    data.setValueFormatter(new PercentFormatter());
-                    pieChart.setData(data);
-                    centerText = "Seleccione Categoría \n para ver N° de casos";
-                    pieChart.setCenterText(centerText);
-                    pieChart.animateY(300, Easing.EasingOption.EaseInOutQuad);
-                    pieChart.highlightValue(-1, -1); // Deseleccionar items
-                    break;
-                }
-            case R.id.radio3:
-                if (checked) {
-                    PieData data = new PieData(xVals3, pieDataSet3); xValsSelected=xVals3;
-                    data.setValueTextSize(12f);
-                    data.setValueFormatter(new PercentFormatter());
-                    pieChart.setData(data);
-                    centerText = "Seleccione Año \n para ver N° de casos";
-                    pieChart.setCenterText(centerText);
-                    pieChart.animateY(300, Easing.EasingOption.EaseInOutQuad);
-                    pieChart.highlightValue(-1, -1); // Deseleccionar items
-                    break;
-                }
-            case R.id.radio4:
-                if (checked) {
-                    PieData data = new PieData(xVals4, pieDataSet4); xValsSelected=xVals4;
-                    data.setValueTextSize(12f);
-                    data.setValueFormatter(new PercentFormatter());
-                    pieChart.setData(data);
-                    centerText = "Seleccione Mes \n para ver N° de casos";
-                    pieChart.setCenterText(centerText);
-                    pieChart.animateY(300, Easing.EasingOption.EaseInOutQuad);
-                    pieChart.highlightValue(-1, -1); // Deseleccionar items
-                    break;
-                }
-        }
     }
 
     public ChartFragment setContext(Context cont){
