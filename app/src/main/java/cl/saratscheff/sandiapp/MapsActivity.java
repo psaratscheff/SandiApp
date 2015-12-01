@@ -98,6 +98,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private HashMap<Marker,String> currentMarkers = new HashMap<Marker,String>();
 
     private Fragment myPostsFragment = null;
+    private Fragment myChartFragment = null;
     private MenuItem[] categoriesMenuItems;
 
     @Override
@@ -154,16 +155,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             drawer.closeDrawer(GravityCompat.START);
         } else if (lastMarkerClicked != null && lastMarkerClicked.isInfoWindowShown()){
             lastMarkerClicked.hideInfoWindow();
-        } else if (currentNavSel == R.id.nav_myposts && oldNavSel == R.id.nav_map) {
+        } else if (currentNavSel == R.id.nav_myposts) {
             if(myPostsFragment != null){
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 transaction.remove(myPostsFragment);
                 transaction.commit();
                 myPostsFragment = null;
-                currentNavSel = oldNavSel;
                 currentNavSel = R.id.nav_map;
                 navigationView.getMenu().getItem(0).setChecked(true);
                 setTitle(R.string.title_activity_maps);
+            }
+        } else if (currentNavSel == R.id.nav_charts) {
+            if(myChartFragment != null){
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.remove(myChartFragment);
+                transaction.commit();
+                myChartFragment = null;
+                currentNavSel = R.id.nav_map;
+                navigationView.getMenu().getItem(0).setChecked(true);
+                setTitle(R.string.title_activity_maps);
+                fab.show();
             }
         } else {
             // Ir al Inicio del SO, en vez de volver al login screen.
@@ -269,8 +280,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             currentNavSel = id;
         }
 
-
         if (id == R.id.nav_map) {
+
+            fab.show();
 
             if(myPostsFragment != null){
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -278,9 +290,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 transaction.commit();
                 myPostsFragment = null;
                 setTitle(R.string.title_activity_maps);
+            } else if (myChartFragment != null){
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.remove(myChartFragment);
+                transaction.commit();
+                myChartFragment = null;
+                setTitle(R.string.title_activity_maps);
             }
 
         } else if (id == R.id.nav_myposts) {
+
+            fab.show();
 
             myPostsFragment = new PostFragment().setContext(context);
 
@@ -295,8 +315,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             transaction.commit();
             setTitle(R.string.title_activity_myposts);
 
+        } else if (id == R.id.nav_charts) {
+
+            fab.hide();
+
+            myChartFragment = new ChartFragment().setContext(context);
+
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+            // Replace whatever is in the fragment_container view with this fragment,
+            // and add the transaction to the back stack if needed
+            transaction.replace(R.id.map, myChartFragment);
+            transaction.addToBackStack(null);
+
+            // Commit the transaction
+            transaction.commit();
+            setTitle(R.string.title_activity_chart);
+
+            // IMPLEMENTACIÓN VIEJA (Activity Completo)
+            /*Intent chartIntent = new Intent(MapsActivity.this, ChartActivity.class);
+            MapsActivity.this.startActivity(chartIntent);*/
+
         } else if (id == R.id.nav_logout) {
-            mFire.unauth();
+
+            fab.show();
+
             LoginManager.getInstance().logOut();
             //startActivity(new Intent(MapsActivity.this, LoginActivity.class));
         }
