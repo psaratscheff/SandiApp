@@ -10,36 +10,52 @@
     tools:context="cl.saratscheff.sandiapp.ChartActivity"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Clasificar información por:"/>
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.1"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:orientation="horizontal"
-        android:layout_below="@+id/pie_chart">
+        android:gravity="center"
+        android:layout_below="@+id/title">
         <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/radio1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:checked="true"
-            android:text="Comunas"/>
+            android:text="Comunas"
+            android:onClick="onRadioButtonClicked"/>
         <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/radio2"
-            android:text="Categoría"/>
-        <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Categoría"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton
             android:id="@+id/radio3"
-            android:text="Fecha"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Año"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton
+            android:id="@+id/radio4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mes"
+            android:onClick="onRadioButtonClicked"/>
     </RadioGroup>
 
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/pie_chart"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.9"/>
+        android:layout_weight="1"
+        android:layout_below="@+id/radioGroup"/>
 
 </LinearLayout>
