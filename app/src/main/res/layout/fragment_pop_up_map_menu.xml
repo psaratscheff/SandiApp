@@ -23,17 +23,7 @@
 
     </FrameLayout>
 
-    <!--
-    <TextView
-        android:id="@+id/lbl_description"
-        android:text="Breve descripcion del post"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:textColor="@color/colorPrimary"
-        style="?android:attr/borderlessButtonStyle" />
-        -->
+
     <Button
         android:layout_width="200dp"
         android:layout_height="wrap_content"
