@@ -63,7 +63,10 @@ import java.io.File;
 import java.io.IOException;
 import java.security.acl.Group;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -94,12 +97,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public PopUpMapMenu editNameDialog;
     private int currentNavSel = 0;
     private int oldNavSel = 0;
+    private Geocoder geo;
 
     private HashMap<Marker,String> currentMarkers = new HashMap<Marker,String>();
 
     private Fragment myPostsFragment = null;
     private Fragment myChartFragment = null;
     private MenuItem[] categoriesMenuItems;
+
+    private ArrayList<PostChartInfo> postsInfo = new ArrayList<PostChartInfo>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +138,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mFire = new Firebase("https://sizzling-heat-8397.firebaseio.com");
         mFire.setAndroidContext(this);
+        geo = new Geocoder(context, Locale.getDefault());
     }
 
     @Override
@@ -610,6 +618,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if(snapshot.hasChildren()){
                     for (DataSnapshot child : snapshot.getChildren()) {
 
+                        PostChartInfo postInfo = new PostChartInfo();
+                        postInfo.id = child.getKey().toString();
+
                         boolean[] shouldCreateMark = new boolean[]{false, false, false, false};
 
                         LatLng loc = null;
@@ -618,7 +629,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                             loc = new LatLng(Double.parseDouble(child.child("latitude").getValue().toString()),
                                     Double.parseDouble(child.child("longitude").getValue().toString()));
-
+                            
+                            if(!child.child("address").exists()){
+                                try {
+                                    postInfo.address = geo.getFromLocation(loc.latitude, loc.longitude, 1).get(0).getLocality();
+                                    mFireMarkers.child(child.getKey().toString()).child("address").setValue(geo.getFromLocation(loc.latitude, loc.longitude, 1).get(0).getLocality());
+                                }
+                                catch (Exception e) {
+                                    e.printStackTrace(); // getFromLocation() may sometimes fail
+                                }
+                            }
+                            else {
+                                postInfo.address = child.child("address").getValue().toString();
+                            }
 
                             shouldCreateMark[0] = true;
                         }
@@ -642,8 +665,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             despues login de nuevo, entonces aparece un error y no se pueden cargar
                             los pins.
                              */
+                            postInfo.category = child.child("category").getValue().toString();
+
                             try{
                                 String category = child.child("category").getValue().toString();
+
                                 boolean isCategorySelected = false;
                                 for(int i=0; i<categoriesMenuItems.length; i++){
                                     if(categoriesMenuItems[i].isChecked() && (categoriesMenuItems[i].getTitle().equals("Todos")
@@ -680,6 +706,35 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             }
                             Marker mark = mMap.addMarker(markerOptions);
                             currentMarkers.put(mark, child.getKey());
+
+                            if(child.child("date").exists()){
+                                String dateString = child.child("date").getValue().toString();
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+                                Date convertedDate = new Date();
+                                try {
+                                    convertedDate = dateFormat.parse(dateString);
+                                    postInfo.date = convertedDate;
+                                    boolean shouldAdd = true;
+                                    try{
+                                        for (PostChartInfo p : postsInfo) {
+                                            if(p.id.equals(postInfo.id)){
+                                                postsInfo.remove(p);
+                                                postsInfo.add(postInfo);
+                                                shouldAdd = false;
+                                            }
+                                        }
+                                    }
+                                    catch (ConcurrentModificationException e){
+                                        shouldAdd = false;
+                                    }
+                                    if(shouldAdd){
+                                        postsInfo.add(postInfo);
+                                    }
+                                } catch (ParseException e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                     }
                 }
@@ -703,6 +758,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 mMap.clear();
+                postsInfo.clear();
                 loadPins();
             }
 
