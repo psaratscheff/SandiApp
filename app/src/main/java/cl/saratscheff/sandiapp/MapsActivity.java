@@ -93,7 +93,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private DrawerLayout drawer;
     private Menu menuCategory;
     private SupportMapFragment mapFragment;
-    private static LatLng currentLocation = new LatLng(-33.478905, -70.657607);
+    private static LatLng currentLocation = new LatLng(-33.049114, -71.619115);
     public PopUpMapMenu editNameDialog;
     private int currentNavSel = 0;
     private int oldNavSel = 0;
@@ -348,6 +348,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             fab.show();
 
             LoginManager.getInstance().logOut();
+            mFire.unauth();
             //startActivity(new Intent(MapsActivity.this, LoginActivity.class));
         }
 
@@ -420,7 +421,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 LatLng loc = getCurrentLocation();
-                if (loc.latitude != -33.478905 && loc.longitude != -70.657607) {
+                if (loc.latitude != -33.049114 && loc.longitude != -71.619115) {
                     Intent Form = new Intent(MapsActivity.this, Formulario.class);
                     startActivityForResult(Form, 1);
                 } else {
@@ -465,7 +466,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     try {
                         LatLng location = new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude());
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
                     } catch (Exception e) {
                         AlertDialog alertDialog = new AlertDialog.Builder(MapsActivity.this).create();
                         alertDialog.setTitle("No se pudo encontrar su ubicación");
@@ -580,8 +581,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
 
         /* Definimos la posicion y vista inicial */
-        LatLng santiago = new LatLng(-33.478905, -70.657607);
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(santiago, 11));
+        LatLng santiago = new LatLng(-33.049114, -71.619115);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(santiago, 13));
     }
 
     /* Esto es para agregar un marcador haciendo touch */
