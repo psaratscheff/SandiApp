@@ -220,33 +220,37 @@ public class ChartFragment extends Fragment implements OnChartValueSelectedListe
             }
     }
 
-
+        int contador = 0;
         //llenar por comuna
         for(String[] object: comunas)
         {
-            valsComp1.add(new Entry(Integer.parseInt(object[1]), 0));
+            valsComp1.add(new Entry(Integer.parseInt(object[1]), contador));
             xVals1.add(object[0]);
+            contador+=1;
         }
-
+        contador=0;
         //llenar por categoria
         for(String[] object: categorias)
         {
-            valsComp2.add(new Entry(Integer.parseInt(object[1]), 0));
+            valsComp2.add(new Entry(Integer.parseInt(object[1]), contador));
             xVals2.add(object[0]);
+            contador+=1;
         }
-
+        contador=0;
         //llenar por ano
         for(String[] object: anos)
         {
-            valsComp3.add(new Entry(Integer.parseInt(object[1]), 0));
+            valsComp3.add(new Entry(Integer.parseInt(object[1]), contador));
             xVals3.add(object[0]);
+            contador+=1;
         }
-
+        contador=0;
         //llenar por mes
         for(String[] object: meses)
         {
-            valsComp4.add(new Entry(Integer.parseInt(object[1]), 0));
+            valsComp4.add(new Entry(Integer.parseInt(object[1]), contador));
             xVals4.add(object[0]);
+            contador+=1;
         }
 
         pieDataSet1 = new PieDataSet(valsComp1, "");
