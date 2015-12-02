@@ -141,7 +141,7 @@ public class ComplaintActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChildKey) {
                 MessageClass newMessage = snapshot.getValue(MessageClass.class);
-                newMessage.setCreatedAt(System.currentTimeMillis());
+                if (newMessage.getCreatedAt() == 0) { newMessage.setCreatedAt(System.currentTimeMillis()); }
                 ((MessageRowAdapter) listViewDiscussion.getAdapter()).add(newMessage);
             }
 
