@@ -298,7 +298,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 transaction.commit();
                 myPostsFragment = null;
                 setTitle(R.string.title_activity_maps);
-            } else if (myChartFragment != null){
+            } if (myChartFragment != null){
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 transaction.remove(myChartFragment);
                 transaction.commit();
