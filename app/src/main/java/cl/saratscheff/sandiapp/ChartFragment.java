@@ -127,11 +127,15 @@ public class ChartFragment extends Fragment implements OnChartValueSelectedListe
 
         // Crear listas de Entries
         ArrayList<Entry> valsComp1 = new ArrayList<Entry>();
+        xVals1 = new ArrayList<String>();
         ArrayList<Entry> valsComp2 = new ArrayList<Entry>();
+        xVals2 = new ArrayList<String>();
         ArrayList<Entry> valsComp3 = new ArrayList<Entry>();
+        xVals3 = new ArrayList<String>();
         ArrayList<Entry> valsComp4 = new ArrayList<Entry>();
+        xVals4 = new ArrayList<String>();
 
-        // Rellenar con Entries de ejemplo!
+        /* Rellenar con Entries de ejemplo!
         valsComp1.add(new Entry(104, 0));
         valsComp1.add(new Entry(45, 1));
         valsComp1.add(new Entry(123, 2));
@@ -148,21 +152,117 @@ public class ChartFragment extends Fragment implements OnChartValueSelectedListe
         valsComp4.add(new Entry(74, 1));
         valsComp4.add(new Entry(13, 2));
         valsComp4.add(new Entry(37, 3));
+        */
+
+        ArrayList<String[]> comunas = new  ArrayList<String[]>();
+        ArrayList<String[]> categorias = new  ArrayList<String[]>();
+        ArrayList<String[]> anos = new  ArrayList<String[]>();
+        ArrayList<String[]> meses = new  ArrayList<String[]>();
+
+
+        //ordenar los datos en grupos para los graficos
+        for(PostChartInfo object: data){
+            boolean encontradoComuna = false;
+            boolean encontradocategoria = false;
+            boolean encontradoAno = false;
+            boolean encontradoMes = false;
+            //comunas
+            for(String[] comuna: comunas){
+            if (object.address.equals(comuna[0]))
+            {
+                comuna[1] = (Integer.parseInt(comuna[1]) + 1)+"";
+                encontradoComuna = true;
+            }}
+            if (encontradoComuna == false)
+            {
+                String[] aux = {object.address, "1"};
+                comunas.add(aux);
+            }
+
+            //categorias
+            for(String[] categoria: categorias){
+                if (object.category.equals(categoria[0]))
+                {
+                    categoria[1] = (Integer.parseInt(categoria[1]) + 1)+"";
+                    encontradocategoria = true;
+                }}
+            if (encontradocategoria == false)
+            {
+                String[] aux = {object.category, "1"};
+                categorias.add(aux);
+            }
+
+
+        //ano
+        for(String[] ano: anos){
+            if (object.date.getYear() + 1900 == Integer.parseInt(ano[0]))
+            {
+                ano[1] = (Integer.parseInt(ano[1]) + 1)+"";
+                encontradoAno = true;
+            }}
+        if (encontradoAno == false)
+        {
+            String[] aux = {object.date.getYear()+ 1900 + "", "1"};
+            anos.add(aux);
+        }
+
+            //mes
+            for(String[] mes: meses){
+                if (object.date.getMonth() == Integer.parseInt(mes[0]))
+                {
+                    mes[1] = (Integer.parseInt(mes[1]) + 1)+"";
+                    encontradoMes = true;
+                }}
+            if (encontradoMes == false)
+            {
+                String[] aux = {object.date.getMonth()+ "", "1"};
+                meses.add(aux);
+            }
+    }
+
+
+        //llenar por comuna
+        for(String[] object: comunas)
+        {
+            valsComp1.add(new Entry(Integer.parseInt(object[1]), 0));
+            xVals1.add(object[0]);
+        }
+
+        //llenar por categoria
+        for(String[] object: categorias)
+        {
+            valsComp2.add(new Entry(Integer.parseInt(object[1]), 0));
+            xVals2.add(object[0]);
+        }
+
+        //llenar por ano
+        for(String[] object: anos)
+        {
+            valsComp3.add(new Entry(Integer.parseInt(object[1]), 0));
+            xVals3.add(object[0]);
+        }
+
+        //llenar por mes
+        for(String[] object: meses)
+        {
+            valsComp4.add(new Entry(Integer.parseInt(object[1]), 0));
+            xVals4.add(object[0]);
+        }
 
         pieDataSet1 = new PieDataSet(valsComp1, "");
         pieDataSet2 = new PieDataSet(valsComp2, "");
         pieDataSet3 = new PieDataSet(valsComp3, "");
         pieDataSet4 = new PieDataSet(valsComp4, "");
 
-        xVals1 = new ArrayList<String>();
-        xVals1.add("Las Condes"); xVals1.add("Vitacura"); xVals1.add("La Reina"); xVals1.add("La Pintana");
-        xVals2 = new ArrayList<String>();
-        xVals2.add("Robo Autos"); xVals2.add("Transporte público"); xVals2.add("Mascotas perdidas"); xVals2.add("Otros");
+
+
+
+       /* xVals2.add("Robo Autos"); xVals2.add("Transporte público"); xVals2.add("Mascotas perdidas"); xVals2.add("Otros");
         xVals3 = new ArrayList<String>();
         xVals3.add("2015"); xVals3.add("2014"); xVals3.add("2013"); xVals3.add("2012");
         xVals4 = new ArrayList<String>();
         xVals4.add("Septiembre"); xVals4.add("Octubre"); xVals4.add("Noviembre"); xVals4.add("Diciembre");
-
+*/
         ArrayList<Integer> colors = new ArrayList<Integer>();
         for (int c : ColorTemplate.JOYFUL_COLORS)
             colors.add(c);
