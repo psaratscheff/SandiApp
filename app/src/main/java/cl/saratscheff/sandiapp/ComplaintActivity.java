@@ -140,24 +140,9 @@ public class ComplaintActivity extends AppCompatActivity {
             // Retrieve new posts as they are added to the database
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChildKey) {
-                // Cargo el mensaje solo una vez que ya contenga fecha
-                snapshot.getRef().addValueEventListener(new ValueEventListener() {
-                    boolean printed = false; // Evito cargar duplicadamente el mensaje
-
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        if (!printed) {
-                            MessageClass newMessage = snapshot.getValue(MessageClass.class);
-                            ((MessageRowAdapter) listViewDiscussion.getAdapter()).add(newMessage);
-                            printed = true; // Marco mensaje ya impreso
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(FirebaseError error) {
-                        System.out.println("The read failed: " + error.getMessage());
-                    }
-                });
+                MessageClass newMessage = snapshot.getValue(MessageClass.class);
+                newMessage.setCreatedAt(System.currentTimeMillis());
+                ((MessageRowAdapter) listViewDiscussion.getAdapter()).add(newMessage);
             }
 
             // Get the data on a post that has changed
