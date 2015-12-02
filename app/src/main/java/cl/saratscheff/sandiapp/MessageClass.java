@@ -15,4 +15,6 @@ public class MessageClass {
     public String getAuthor() { return author; }
     public String getContent() { return content; }
     public long getCreatedAt() { return createdAt; }
+
+    public void setCreatedAt(long time) { createdAt = time; }
 }

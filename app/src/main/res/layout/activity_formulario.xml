@@ -7,7 +7,10 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_main"
     tools:context=".MainActivity">
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/origin/master
 
     <ScrollView
         android:layout_width="fill_parent"
@@ -85,11 +88,6 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="0.26"
                 android:gravity="bottom" />
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"></LinearLayout>
 
             <Spinner
                 android:layout_width="fill_parent"

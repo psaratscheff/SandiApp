@@ -3,8 +3,20 @@ package cl.saratscheff.sandiapp;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,55 +101,11 @@ public class PostFragment extends Fragment implements ListView.OnItemClickListen
         }
 
         mFire = new Firebase("https://sizzling-heat-8397.firebaseio.com/markers");
-        mFire.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                myPosts = new ArrayList<String>();
-                if (snapshot.hasChildren()) {
-                    for (DataSnapshot child : snapshot.getChildren()) {
-                        Post newPost = new Post();
-
-                        if(child.child("latitude").exists() && child.child("longitude").exists()){
-                            newPost.latitude = child.child("latitude").getValue().toString();
-                            newPost.longitude = child.child("longitude").getValue().toString();
-                        }
-
-                        if(child.child("title").exists()){
-                            newPost.title = child.child("title").getValue().toString();
-                        }
-
-                        if(child.child("description").exists()){
-                            newPost.description = child.child("description").getValue().toString();
-                        }
-
-                        if(child.child("date").exists()){
-                            newPost.date = child.child("date").getValue().toString();
-                        }
-
-                        if(child.child("creator").exists()){
-                            newPost.creator = child.child("creator").getValue().toString();
-                        }
-
-                        newPost.id = child.getKey();
-
-                        if(newPost.creator.equals(LoginActivity.userID)) {
-                            //((PostsAdapter) mListView.getAdapter()).add(newPost);
-                            //mListView.setAdapter((PostsAdapter)mListView.getAdapter());
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                System.out.println("The read failed: " + firebaseError.getMessage());
-            }
-        });
 
         mFire.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Post newPost = new Post();
+                final Post newPost = new Post();
 
                 if(dataSnapshot.child("latitude").exists() && dataSnapshot.child("longitude").exists()){
                     newPost.latitude = dataSnapshot.child("latitude").getValue().toString();
@@ -163,6 +131,19 @@ public class PostFragment extends Fragment implements ListView.OnItemClickListen
                 newPost.id = dataSnapshot.getKey();
 
                 if(newPost.creator.equals(LoginActivity.userID)) {
+                    Firebase mFireAux = new Firebase("https://sizzling-heat-8397.firebaseio.com/images/"+newPost.id);
+                    mFireAux.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            ((PostsAdapter)mListView.getAdapter()).setImage(newPost.id, dataSnapshot.getValue().toString());
+                        }
+
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+
+                        }
+                    });
+
                     ((PostsAdapter) mListView.getAdapter()).add(newPost);
                 }
             }
@@ -318,6 +299,15 @@ class PostsAdapter extends BaseAdapter{
         }
     }
 
+    public void setImage(String postID, String imageB64){
+        for(Post p:data){
+            if(p.id == postID){
+                p.image = imageB64;
+                notifyDataSetChanged();
+            }
+        }
+    }
+
     public void add(Post post) {
         boolean shouldAdd = true;
         for(Post p:data){
@@ -366,14 +356,39 @@ class PostsAdapter extends BaseAdapter{
             vi = inflater.inflate(R.layout.row_mypost, parent, false);
         TextView textViewTitle = (TextView) vi.findViewById(R.id.textViewPostTitle);
         TextView textViewDate = (TextView) vi.findViewById(R.id.textViewPostDate);
-        ImageView roundImage = (ImageView) vi.findViewById(R.id.post_round_image);
+        ImageView postImage = (ImageView) vi.findViewById(R.id.post_round_image);
 
         if(position<data.size()){
             textViewTitle.setText(data.get(position).title);
             textViewDate.setText(data.get(position).date);
+
+            if(data.get(position).image != null) {
+                //postImage.setImageBitmap(decode(data.get(position).image));
+                Bitmap bm = decodeToSquareImage(data.get(position).image);
+                RoundImage roundedImage = new RoundImage(bm);
+                postImage.setImageDrawable(roundedImage);
+            }
         }
 
         return vi;
+    }
+
+    private Bitmap decodeToSquareImage(String imageFile)
+    {
+        byte[] imageAsBytes = Base64.decode(imageFile, Base64.DEFAULT);
+        Bitmap bmp = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
+
+        int width  = bmp.getWidth();
+        int height = bmp.getHeight();
+        int newWidth = (height > width) ? width : height;
+        int newHeight = (height > width)? height - ( height - width) : height;
+        int cropW = (width - height) / 2;
+        cropW = (cropW < 0)? 0: cropW;
+        int cropH = (height - width) / 2;
+        cropH = (cropH < 0)? 0: cropH;
+        Bitmap cropImg = Bitmap.createBitmap(bmp, cropW, cropH, newWidth, newHeight);
+
+        return  cropImg;
     }
 }
 
@@ -385,6 +400,89 @@ class Post{
     public String longitude;
     public String creator;
     public String id;
+    public String image;
 
     public Post() { }
+}
+
+class RoundImage extends Drawable {
+    private final Bitmap mBitmap;
+    private final Paint mPaint;
+    private final RectF mRectF;
+    private final int mBitmapWidth;
+    private final int mBitmapHeight;
+
+    public RoundImage(Bitmap bitmap) {
+        mBitmap = bitmap;
+        mRectF = new RectF();
+        mPaint = new Paint();
+        mPaint.setAntiAlias(true);
+        mPaint.setDither(true);
+        final BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+        mPaint.setShader(shader);
+
+        mBitmapWidth = mBitmap.getWidth();
+        mBitmapHeight = mBitmap.getHeight();
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        canvas.drawOval(mRectF, mPaint);
+    }
+
+    @Override
+    protected void onBoundsChange(Rect bounds) {
+        super.onBoundsChange(bounds);
+        mRectF.set(bounds);
+    }
+
+    @Override
+    public void setAlpha(int alpha) {
+        if (mPaint.getAlpha() != alpha) {
+            mPaint.setAlpha(alpha);
+            invalidateSelf();
+        }
+    }
+
+    @Override
+    public void setColorFilter(ColorFilter cf) {
+        mPaint.setColorFilter(cf);
+    }
+
+    @Override
+    public int getOpacity() {
+        return PixelFormat.TRANSLUCENT;
+    }
+
+    @Override
+    public int getIntrinsicWidth() {
+        return mBitmapWidth;
+    }
+
+    @Override
+    public int getIntrinsicHeight() {
+        return mBitmapHeight;
+    }
+
+    public void setAntiAlias(boolean aa) {
+        mPaint.setAntiAlias(aa);
+        invalidateSelf();
+    }
+
+    @Override
+    public void setFilterBitmap(boolean filter) {
+        mPaint.setFilterBitmap(filter);
+        invalidateSelf();
+    }
+
+    @Override
+    public void setDither(boolean dither) {
+        mPaint.setDither(dither);
+        invalidateSelf();
+    }
+
+    public Bitmap getBitmap() {
+        return mBitmap;
+    }
+
 }
