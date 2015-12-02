@@ -50,6 +50,8 @@ public class ChartFragment extends Fragment implements OnChartValueSelectedListe
     private LinearLayout llLayout;
     private Context context;
 
+    private ArrayList<PostChartInfo> data = null;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -211,4 +213,10 @@ public class ChartFragment extends Fragment implements OnChartValueSelectedListe
         this.context = cont;
         return this;
     }
+
+    public ChartFragment setData(ArrayList<PostChartInfo> data){
+        this.data = data;
+        return this;
+    }
 }
+
