@@ -43,6 +43,9 @@
         <item>Robo de autos</item>
         <item>Transporte público</item>
         <item>Mascotas perdidas</item>
+        <item>Objetos perdidos</item>
+        <item>Asalto</item>
+        <item>Mal estacionado</item>
         <item>Otros</item>
     </string-array>
 </resources>
