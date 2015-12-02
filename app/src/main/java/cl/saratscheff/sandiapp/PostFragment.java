@@ -135,7 +135,8 @@ public class PostFragment extends Fragment implements ListView.OnItemClickListen
                     mFireAux.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            ((PostsAdapter)mListView.getAdapter()).setImage(newPost.id, dataSnapshot.getValue().toString());
+                            if(dataSnapshot.getValue() != null)
+                                ((PostsAdapter)mListView.getAdapter()).setImage(newPost.id, dataSnapshot.getValue().toString());
                         }
 
                         @Override
