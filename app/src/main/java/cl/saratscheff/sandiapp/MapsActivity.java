@@ -620,16 +620,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     Double.parseDouble(child.child("longitude").getValue().toString()));
 
 
-                            try {
-
-                                Geocoder geo = new Geocoder(context, Locale.getDefault());
-                                List<Address> addresses = geo.getFromLocation(loc.latitude, loc.longitude, 1);
-                            }
-                            catch (Exception e) {
-                                e.printStackTrace(); // getFromLocation() may sometimes fail
-                            }
-
-
                             shouldCreateMark[0] = true;
                         }
 
