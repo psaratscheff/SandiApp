@@ -327,8 +327,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             fab.hide();
 
-            myChartFragment = new ChartFragment().setContext(context);
-
+            myChartFragment = new ChartFragment().setContext(context).setData(postsInfo);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
             // Replace whatever is in the fragment_container view with this fragment,
@@ -629,7 +628,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                             loc = new LatLng(Double.parseDouble(child.child("latitude").getValue().toString()),
                                     Double.parseDouble(child.child("longitude").getValue().toString()));
-                            
+
                             if(!child.child("address").exists()){
                                 try {
                                     postInfo.address = geo.getFromLocation(loc.latitude, loc.longitude, 1).get(0).getLocality();
