@@ -30,6 +30,7 @@ class MessageRowAdapter extends BaseAdapter {
         }
 
         public void add(MessageClass msg) {
+            final MessageRowAdapter t = this;
             data.add(0, msg); // Agrego al inicio del array el siguiente mensaje
             notifyDataSetChanged();
         }
@@ -55,23 +56,15 @@ class MessageRowAdapter extends BaseAdapter {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             // TODO Auto-generated method stub
-            View vi = convertView;
-            if (vi == null)
-                vi = inflater.inflate(R.layout.row_message_complaint, null);
-            TextView textViewSender = (TextView) vi.findViewById(R.id.textViewSender);
-            TextView textViewMessage = (TextView) vi.findViewById(R.id.textViewMessage);
-            TextView textViewDate = (TextView) vi.findViewById(R.id.textViewDate);
+            if (convertView == null)
+                convertView = inflater.inflate(R.layout.row_message_complaint, null);
+            TextView textViewSender = (TextView) convertView.findViewById(R.id.textViewSender);
+            TextView textViewMessage = (TextView) convertView.findViewById(R.id.textViewMessage);
+            TextView textViewDate = (TextView) convertView.findViewById(R.id.textViewDate);
             textViewSender.setText(data.get(position).getAuthor());
             textViewMessage.setText(data.get(position).getContent());
-            if (data.get(position).getCreatedAt() != 0) // En caso de haber una fecha válida almacenada
-            {
-                textViewDate.setText(getDate(data.get(position).getCreatedAt()));
-            }
-            else
-            {
-                textViewDate.setText("");
-            }
-            return vi;
+            textViewDate.setText(getDate(data.get(position).getCreatedAt()));
+            return convertView;
         }
 
         private String getDate(long time) {
