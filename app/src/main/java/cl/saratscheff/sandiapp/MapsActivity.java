@@ -629,8 +629,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                             loc = new LatLng(Double.parseDouble(child.child("latitude").getValue().toString()),
                                     Double.parseDouble(child.child("longitude").getValue().toString()));
-
-<<<<<<< HEAD
+                            
                             if(!child.child("address").exists()){
                                 try {
                                     postInfo.address = geo.getFromLocation(loc.latitude, loc.longitude, 1).get(0).getLocality();
@@ -643,9 +642,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             else {
                                 postInfo.address = child.child("address").getValue().toString();
                             }
-
-=======
->>>>>>> refs/remotes/origin/master
 
                             shouldCreateMark[0] = true;
                         }
